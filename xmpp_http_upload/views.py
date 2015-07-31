@@ -16,6 +16,7 @@
 
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.http import HttpResponse
 from django.http import FileResponse
 from django.utils.crypto import get_random_string
@@ -53,7 +54,14 @@ class RequestSlotView(View):
         hash = get_random_string(64)
         upload = Upload.objects.create(jid=jid, size=size, type=content_type, hash=hash)
 
-        return HttpResponse(upload.hash)
+        location = upload.get_absolute_url()
+        domain = getattr(settings, 'XMPP_HTTP_UPLOAD_DOMAIN', None)
+        if domain is None:
+            url = request.build_absolute_uri(location)
+        else:
+            url = '%s%s' % (domain, location)
+
+        return HttpResponse('%s\n%s' % (url, url))
 
 
 class UploadView(APIView):
