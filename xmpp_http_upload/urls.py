@@ -23,4 +23,6 @@ from . import views
 
 urlpatterns = [
     url(r'^slot/$', views.RequestSlotView.as_view(), name='slot'),
+    # TODO: The filename regex should exclude unsafe characters
+    url(r'^share/(?P<hash>[a-zA-Z0-9]{64}/(?P<filename>.*)$', views.UploadView.as_view(), name='share'),
 ]
