@@ -16,6 +16,8 @@
 
 from __future__ import unicode_literals
 
+import json
+
 from django.conf import settings
 from django.http import HttpResponse
 from django.http import FileResponse
@@ -60,7 +62,15 @@ class RequestSlotView(View):
         else:
             url = '%s%s' % (domain, location)
 
-        return HttpResponse('%s\n%s' % (url, url))
+        output = request.GET.get('output', 'text/plain')
+
+        if output == 'text/plain':
+            return HttpResponse('%s\n%s' % (url, url), content_type=output)
+        elif output == 'application/json':
+            content = json.dumps({'get': url, 'put': url})
+            return HttpResponse(content, content_type=output)
+        else:
+            return HttpResponse("Unsupported content type in output.", status=400)
 
 
 class UploadView(APIView):
