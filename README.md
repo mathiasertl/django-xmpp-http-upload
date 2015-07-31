@@ -7,6 +7,15 @@ all HTTP parts.
 
 **Warning:** This app is in its early stages of development. Certainly not ready for any use.
 
+## Settings
+
+The following settings are supported, simply add them to your `settings.py` file (some projects use
+e.g. a file called `localsettings.py`).
+
+* `XMPP_HTTP_UPLOAD_DOMAIN`
+  The domain used to create upload/download URLs when a new slot is requested by the XMPP server.
+  By default, the domain used to access the slot API is used.
+
 ## Development
 
 If you want to use this app to develop e.g. a plugin for an XMPP server, you can simply do the
