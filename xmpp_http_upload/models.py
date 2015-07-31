@@ -38,4 +38,4 @@ class Upload(models.Model):
 
     def get_absolute_url(self):
         return reverse('xmpp-http-upload:share',
-                       kwargs={'hash': self.hash, 'filename': self.file})
+                       kwargs={'hash': self.hash, 'filename': self.name})
