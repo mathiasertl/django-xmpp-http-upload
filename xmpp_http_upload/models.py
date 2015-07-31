@@ -17,7 +17,6 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.utils.crypto import get_random_string
 
 
 class Upload(models.Model):
@@ -26,6 +25,7 @@ class Upload(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     # Populated when a slot is requested
+    jid = models.CharField(max_length=256)
     name = models.CharField(max_length=256)
     size = models.PositiveIntegerField()
     type = models.CharField(max_length=64, null=True, blank=True)
@@ -34,8 +34,3 @@ class Upload(models.Model):
     # Populated when the file is uploaded
     file = models.FileField(upload_to='http_upload', null=True, blank=True)
     uploaded = models.DateTimeField(null=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        if self.hash is None:
-            self.hash = get_random_string(64)
-        return super(Upload, self).save(*args, **kwargs)
