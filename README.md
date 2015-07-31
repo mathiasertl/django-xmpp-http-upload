@@ -5,6 +5,8 @@ Upload](http://xmpp.org/extensions/inbox/http-upload.html), a draft XEP. The ide
 that an XMPP server gets the relevant upload/download URLs from this app and the app handles
 all HTTP parts. 
 
+**Warning:** This app is in its early stages of development. Certainly not ready for any use.
+
 ### Development
 
 If you want to use this app to develop e.g. a plugin for an XMPP server, you can simply do the
