@@ -27,6 +27,7 @@ class Upload(models.Model):
     name = models.CharField(max_length=256)
     size = models.PositiveIntegerField()
     type = models.CharField(max_length=64, null=True, blank=True)
+    hash = models.CharField(max_length=64)
 
     # Populated when the file is uploaded
     file = models.FileField(upload_to='http_upload', null=True, blank=True)
