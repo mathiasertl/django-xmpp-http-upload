@@ -17,10 +17,23 @@
 from __future__ import unicode_literals
 
 from django.views.generic.base import View
+from django.http import HttpResponse
+
+from .models import Upload
 
 
 class RequestSlotView(View):
     http_method_names = {'get', 'post', }
 
     def get(self, request, *args, **kwargs):
-        print(args, kwargs)
+        jid = request.GET['jid'][0]
+        size = request.GET['size'][0]
+
+        # type is optional:
+        content_type = request.GET.get('type')
+        if content_type:
+            content_type = content_type[0]
+
+        upload = Upload.objects.create(jid=jid, size=size, type=content_type)
+
+        return HttpResponse('ok')
