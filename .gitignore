@@ -5,3 +5,4 @@
 /lib/
 /local/
 /pip-selfcheck.json
+*.sqlite3
