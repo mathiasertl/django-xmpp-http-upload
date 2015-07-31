@@ -42,14 +42,19 @@ The slot API is the API an XMPP uses to request an upload slot that can be forwa
 initiating the upload. It accepts the following GET parameters:
 
 * `jid` (mandatory)
+
   The JID of the user initiating the request. Note that the JID has to be URL-encoded.
 * `name` (mandatory)
+
   The name of the file.
 * `size` (mandatory)
+
   The file size.
 * `content_type`
+
   The content type of the file that will be uploaded. According to the XEP, this is optional.
 * `output`
+
   The format of the output. Currently `text/plain` (the default) and `application/json` is
   supported.
 
