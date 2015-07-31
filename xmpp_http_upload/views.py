@@ -17,14 +17,21 @@
 from __future__ import unicode_literals
 
 from django.http import HttpResponse
+from django.http import FileResponse
 from django.utils.crypto import get_random_string
 from django.views.generic.base import View
+
+from rest_framework.parsers import FileUploadParser
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Upload
 
 
 class RequestSlotView(View):
     http_method_names = {'get', 'post', }
+
+    # TODO: do some general checks (e.g. origin of request?) in the dispatch method
 
     def get(self, request, *args, **kwargs):
         try:
@@ -38,10 +45,32 @@ class RequestSlotView(View):
         except (KeyError, IndexError, ValueError):
             return HttpResponse(status=400)
 
-        if not jid or not size or size <= 0:  # empty jid or size passed23
+        if not jid or not size or size <= 0:  # empty jid or size passed
             return HttpResponse(status=400)
+
+        # TODO: Check quotas, permissions, etc
 
         hash = get_random_string(64)
         upload = Upload.objects.create(jid=jid, size=size, type=content_type, hash=hash)
 
         return HttpResponse(upload.hash)
+
+
+class UploadView(APIView):
+    parser_classes = (FileUploadParser, )
+
+    def get(self, request, hash, filename):
+        """Download a file."""
+        upload = Upload.objects.get(hash=hash, filename=filename)
+
+        return FileResponse(upload.file)
+
+    def put(self, request, hash, filename, format=None):
+        upload = Upload.objects.get(hash=hash, filename=filename)
+
+        # TODO: check size
+
+        file_obj = request.data['file']
+        upload.file = file_obj
+        upload.save()
+        return Response(status=204)
