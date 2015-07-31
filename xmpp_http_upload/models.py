@@ -17,6 +17,8 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.utils.crypto import get_random_string
+
 
 class Upload(models.Model):
     # housekeeping
@@ -32,3 +34,8 @@ class Upload(models.Model):
     # Populated when the file is uploaded
     file = models.FileField(upload_to='http_upload', null=True, blank=True)
     uploaded = models.DateTimeField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.hash is None:
+            self.hash = get_random_string(64)
+        return super(Upload, self).save(*args, **kwargs)
