@@ -17,6 +17,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.core.urlresolvers import reverse
 
 
 class Upload(models.Model):
@@ -34,3 +35,7 @@ class Upload(models.Model):
     # Populated when the file is uploaded
     file = models.FileField(upload_to='http_upload', null=True, blank=True)
     uploaded = models.DateTimeField(null=True, blank=True)
+
+    def get_absolute_url(self):
+        return reverse('xmpp-http-upload:share',
+                       kwargs={'hash': self.hash, 'filename': self.file})
