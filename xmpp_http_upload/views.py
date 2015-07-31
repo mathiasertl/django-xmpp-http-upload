@@ -36,23 +36,22 @@ class RequestSlotView(View):
 
     def get(self, request, *args, **kwargs):
         try:
-            jid = request.GET['jid'][0]
-            size = int(request.GET['size'][0])
+            jid = request.GET['jid']
+            name = request.GET['name']
+            size = int(request.GET['size'])
 
             # type is optional:
             content_type = request.GET.get('type')
-            if content_type:
-                content_type = content_type[0]
         except (KeyError, IndexError, ValueError):
             return HttpResponse(status=400)
 
-        if not jid or not size or size <= 0:  # empty jid or size passed
+        if not jid or not size or not name or size <= 0:  # empty jid or size passed
             return HttpResponse(status=400)
 
         # TODO: Check quotas, permissions, etc
 
         hash = get_random_string(64)
-        upload = Upload.objects.create(jid=jid, size=size, type=content_type, hash=hash)
+        upload = Upload.objects.create(jid=jid, name=name, size=size, type=content_type, hash=hash)
 
         location = upload.get_absolute_url()
         domain = getattr(settings, 'XMPP_HTTP_UPLOAD_DOMAIN', None)
