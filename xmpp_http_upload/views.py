@@ -16,8 +16,9 @@
 
 from __future__ import unicode_literals
 
-from django.views.generic.base import View
 from django.http import HttpResponse
+from django.utils.crypto import get_random_string
+from django.views.generic.base import View
 
 from .models import Upload
 
@@ -26,14 +27,21 @@ class RequestSlotView(View):
     http_method_names = {'get', 'post', }
 
     def get(self, request, *args, **kwargs):
-        jid = request.GET['jid'][0]
-        size = request.GET['size'][0]
+        try:
+            jid = request.GET['jid'][0]
+            size = int(request.GET['size'][0])
 
-        # type is optional:
-        content_type = request.GET.get('type')
-        if content_type:
-            content_type = content_type[0]
+            # type is optional:
+            content_type = request.GET.get('type')
+            if content_type:
+                content_type = content_type[0]
+        except (KeyError, IndexError, ValueError):
+            return HttpResponse(status=400)
 
-        upload = Upload.objects.create(jid=jid, size=size, type=content_type)
+        if not jid or not size or size <= 0:  # empty jid or size passed23
+            return HttpResponse(status=400)
 
-        return HttpResponse('ok')
+        hash = get_random_string(64)
+        upload = Upload.objects.create(jid=jid, size=size, type=content_type, hash=hash)
+
+        return HttpResponse(upload.hash)
