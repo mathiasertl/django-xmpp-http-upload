@@ -4,5 +4,6 @@
 /include/
 /lib/
 /local/
+/share/
 /pip-selfcheck.json
 *.sqlite3
