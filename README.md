@@ -7,7 +7,7 @@ all HTTP parts.
 
 **Warning:** This app is in its early stages of development. Certainly not ready for any use.
 
-### Development
+## Development
 
 If you want to use this app to develop e.g. a plugin for an XMPP server, you can simply do the
 following to get a running app:
@@ -26,3 +26,27 @@ The last command will start a development HTTP server at `127.0.0.1:8000`. The d
 includes the app under the `/http_upload/` path, so you can request a new slot at
 
 http://127.0.0.1:8000/http_upload/slot/?jid=user@example.com&size=10240&name=example.jpg
+
+### The slot API
+
+The slot API is the API an XMPP uses to request an upload slot that can be forwarded to the user
+initiating the upload. It accepts the following GET parameters:
+
+* `jid` (mandatory)
+  The JID of the user initiating the request. Note that the JID has to be URL-encoded.
+* `name` (mandatory)
+  The name of the file.
+* `size` (mandatory)
+  The file size.
+* `content_type`
+  The content type of the file that will be uploaded. According to the XEP, this is optional.
+* `output`
+  The format of the output. Currently `text/plain` (the default) and `application/json` is
+  supported.
+
+### ToDo
+
+* Write documentation on how to use and configure this app.
+* Actually test upload/download functionality.
+* Allow requesting a slot with a POST request.
+* Allow `application/xml` as output format for a slot request.
