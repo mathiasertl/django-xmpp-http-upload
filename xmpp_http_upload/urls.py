@@ -21,6 +21,6 @@ from django.conf.urls import url
 from . import views
 
 
-urlpatterns = (
-    url(r'^slot/$', views.RequestSlotView, name='slot')
-)
+urlpatterns = [
+    url(r'^slot/$', views.RequestSlotView.as_view(), name='slot'),
+]
