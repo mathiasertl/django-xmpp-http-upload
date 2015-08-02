@@ -59,21 +59,21 @@ class RequestSlotView(View):
         upload = Upload.objects.create(jid=jid, name=name, size=size, type=content_type, hash=hash)
 
         location = upload.get_absolute_url()
-        domain = getattr(settings, 'XMPP_HTTP_UPLOAD_DOMAIN', None)
-        if domain is None:
+        base = getattr(settings, 'XMPP_HTTP_UPLOAD_URL_BASE', None)
+        if base is None:
             put_url = request.build_absolute_uri(location)
         else:
-            put_url = '%s%s' % (domain, location)
+            put_url = '%s%s' % (base, location)
 
         ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
         if ws_download is True:
             get_url = '%s%s/%s/%s' % (settings.MEDIA_URL, _upload_base.strip('/'),
                                       upload.hash, upload.name)
             if not urlsplit(get_url).netloc:
-                if domain is None:
+                if base is None:
                     get_url = request.build_absolute_uri(get_url)
                 else:
-                    get_url = '%s%s' % (domain, get_url)
+                    get_url = '%s%s' % (base, get_url)
 
         else:
             get_url = put_url

@@ -12,7 +12,7 @@ all HTTP parts.
 The following settings are supported, simply add them to your `settings.py` file (some projects use
 e.g. a file called `localsettings.py`).
 
-* `XMPP_HTTP_UPLOAD_DOMAIN`:
+* `XMPP_HTTP_UPLOAD_URL_BASE`:
   The domain used to create upload/download URLs when a new slot is requested by the XMPP server.
   By default, the domain used to access the slot API is used.
 * `XMPP_HTTP_UPLOAD_PUT_TIMEOUT`:
