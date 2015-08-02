@@ -78,12 +78,13 @@ class UploadView(APIView):
 
     def get(self, request, hash, filename):
         """Download a file."""
-        upload = Upload.objects.get(hash=hash, filename=filename)
+        # todo: filter for uploaded files
+        upload = Upload.objects.get(hash=hash, name=filename)
 
         return FileResponse(upload.file)
 
     def put(self, request, hash, filename, format=None):
-        upload = Upload.objects.get(hash=hash, name=filename)
+        upload = Upload.objects.for_upload().get(hash=hash, name=filename)
 
         if int(request.META['CONTENT_LENGTH']) != upload.size:
             return HttpResponse(
