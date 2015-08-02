@@ -83,7 +83,7 @@ class UploadView(APIView):
         return FileResponse(upload.file)
 
     def put(self, request, hash, filename, format=None):
-        upload = Upload.objects.get(hash=hash, filename=filename)
+        upload = Upload.objects.get(hash=hash, name=filename)
 
         # TODO: check size
 
