@@ -47,8 +47,8 @@ class RequestSlotView(View):
         except (KeyError, IndexError, ValueError):
             return HttpResponse(status=400)
 
-        if not jid or not size or not name or size <= 0:  # empty jid or size passed
-            return HttpResponse(status=400)
+        if not jid or not size or not name or size <= 0:
+            return HttpResponse("Empty JID or size passed.", status=400)
 
         # TODO: Check quotas, permissions, etc
 
