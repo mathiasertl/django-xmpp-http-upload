@@ -85,7 +85,14 @@ class UploadView(APIView):
     def put(self, request, hash, filename, format=None):
         upload = Upload.objects.get(hash=hash, name=filename)
 
-        # TODO: check size
+        if int(request.META['CONTENT_LENGTH']) != upload.size:
+            return HttpResponse(
+                "File size (%s) does not match requested size." % request.META['CONTENT_LENGTH'],
+                status=400)
+        if upload.type is not None and request.META['CONTENT_TYPE'] != upload.type:
+            return HttpResponse(
+                'Content type (%s) does not match requested type.' % request.META['CONTENT_TYPE'],
+                status=400)
 
         file_obj = request.data['file']
         upload.file = file_obj
