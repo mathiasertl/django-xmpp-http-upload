@@ -24,8 +24,9 @@ from django.core.urlresolvers import reverse
 
 from .querysets import UploadQuerySet
 
-
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
+
+
 def get_upload_path(instance, filename):
     return os.path.join(_upload_base, instance.hash, filename)
 
