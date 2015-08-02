@@ -78,8 +78,7 @@ class UploadView(APIView):
 
     def get(self, request, hash, filename):
         """Download a file."""
-        # todo: filter for uploaded files
-        upload = Upload.objects.get(hash=hash, name=filename)
+        upload = Upload.objects.uploaded().get(hash=hash, name=filename)
 
         return FileResponse(upload.file)
 

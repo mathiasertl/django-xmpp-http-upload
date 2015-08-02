@@ -29,3 +29,6 @@ class UploadQuerySet(models.QuerySet):
     def for_upload(self):
         expired = timezone.now() - _put_timeout
         return self.filter(file='', created__gt=expired)
+
+    def uploaded(self):
+        return self.exclude(file='')
