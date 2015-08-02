@@ -15,6 +15,9 @@ e.g. a file called `localsettings.py`).
 * `XMPP_HTTP_UPLOAD_URL_BASE`:
   The domain used to create upload/download URLs when a new slot is requested by the XMPP server.
   By default, the domain used to access the slot API is used.
+* `XMPP_HTTP_UPLOAD_ROOT`:
+  The base directory uploaded files will be put into. This will be a subdirectory of the directory
+  configured in the `MEDIA_ROOT` setting. The default is `http_upload`.
 * `XMPP_HTTP_UPLOAD_PUT_TIMEOUT`:
   The default PUT timeout for slots. Clients must start uploading a file within the configured
   time. The default is 360 seconds (five minutes).
