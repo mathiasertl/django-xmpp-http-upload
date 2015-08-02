@@ -22,6 +22,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.http import FileResponse
 from django.utils.crypto import get_random_string
+from django.utils.six.moves.urllib.parse import urlsplit
 from django.views.generic.base import View
 
 from rest_framework.parsers import FileUploadParser
@@ -29,6 +30,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Upload
+
+_upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
 
 
 class RequestSlotView(View):
@@ -58,16 +61,28 @@ class RequestSlotView(View):
         location = upload.get_absolute_url()
         domain = getattr(settings, 'XMPP_HTTP_UPLOAD_DOMAIN', None)
         if domain is None:
-            url = request.build_absolute_uri(location)
+            put_url = request.build_absolute_uri(location)
         else:
-            url = '%s%s' % (domain, location)
+            put_url = '%s%s' % (domain, location)
+
+        ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
+        if ws_download is True:
+            get_url = '%s%s/%s/%s' % (settings.MEDIA_URL, _upload_base.strip('/'),
+                                      upload.hash, upload.name)
+            if not urlsplit(get_url).netloc:
+                if domain is None:
+                    get_url = request.build_absolute_uri(get_url)
+                else:
+                    get_url = '%s%s' % (domain, get_url)
+
+        else:
+            get_url = put_url
 
         output = request.GET.get('output', 'text/plain')
-
         if output == 'text/plain':
-            return HttpResponse('%s\n%s' % (url, url), content_type=output)
+            return HttpResponse('%s\n%s' % (put_url, get_url), content_type=output)
         elif output == 'application/json':
-            content = json.dumps({'get': url, 'put': url})
+            content = json.dumps({'get': get_url, 'put': put_url})
             return HttpResponse(content, content_type=output)
         # TODO: Support XML as output format (certainly useful b/c XMPP servers already need to
         #       have support for XML

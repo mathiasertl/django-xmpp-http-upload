@@ -18,6 +18,9 @@ e.g. a file called `localsettings.py`).
 * `XMPP_HTTP_UPLOAD_PUT_TIMEOUT`:
   The default PUT timeout for slots. Clients must start uploading a file within the configured
   time. The default is 360 seconds (five minutes).
+* `XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD`:
+  Set to `False` if your webserver does not serve media files (see Djangos `MEDIA_URL` setting)
+  and want the app to the app itself to serve downloaded files.
 
 ## Development
 
