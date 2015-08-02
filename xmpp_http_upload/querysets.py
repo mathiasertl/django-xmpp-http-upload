@@ -16,9 +16,16 @@
 
 from __future__ import unicode_literals
 
+from datetime import timedelta
+
+from django.conf import settings
 from django.db import models
+from django.utils import timezone
+
+_put_timeout = timedelta(seconds=int(getattr(settings, 'XMPP_HTTP_UPLOAD_PUT_TIMEOUT', 360)))
 
 
 class UploadQuerySet(models.QuerySet):
     def for_upload(self):
-        return self.filter(file='')
+        expired = timezone.now() - _put_timeout
+        return self.filter(file='', created__gt=expired)
