@@ -16,10 +16,18 @@
 
 from __future__ import unicode_literals
 
+import os
+
+from django.conf import settings
 from django.db import models
 from django.core.urlresolvers import reverse
 
 from .querysets import UploadQuerySet
+
+
+_upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
+def get_upload_path(instance, filename):
+    return os.path.join(_upload_base, instance.hash, filename)
 
 
 class Upload(models.Model):
@@ -37,7 +45,7 @@ class Upload(models.Model):
     hash = models.CharField(max_length=64)
 
     # Populated when the file is uploaded
-    file = models.FileField(upload_to='http_upload', null=True, blank=True)
+    file = models.FileField(upload_to=get_upload_path, null=True, blank=True)
     uploaded = models.DateTimeField(null=True, blank=True)
 
     def get_absolute_url(self):
