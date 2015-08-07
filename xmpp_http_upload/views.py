@@ -114,4 +114,4 @@ class UploadView(APIView):
         file_obj = request.data['file']
         upload.file = file_obj
         upload.save()
-        return Response(status=204)
+        return Response(status=201)
