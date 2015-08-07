@@ -97,7 +97,7 @@ class UploadView(APIView):
         """Download a file."""
         upload = Upload.objects.uploaded().get(hash=hash, name=filename)
 
-        return FileResponse(upload.file, content_type=upload.content_type)
+        return FileResponse(upload.file, content_type=upload.type)
 
     def put(self, request, hash, filename, format=None):
         upload = Upload.objects.for_upload().get(hash=hash, name=filename)
