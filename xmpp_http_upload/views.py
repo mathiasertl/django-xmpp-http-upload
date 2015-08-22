@@ -17,6 +17,7 @@
 from __future__ import unicode_literals
 
 import json
+import re
 
 from django.conf import settings
 from django.http import HttpResponse
@@ -32,6 +33,7 @@ from rest_framework.views import APIView
 from .models import Upload
 
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
+_acls = getattr(settings, 'XMPP_HTTP_ACLS', tuple())
 
 
 class RequestSlotView(View):
@@ -53,7 +55,26 @@ class RequestSlotView(View):
         if not jid or not size or not name or size <= 0:
             return HttpResponse("Empty JID or size passed.", status=400)
 
-        # TODO: Check quotas, permissions, etc
+        for regex, config in _acls:
+            if re.search(regex, jid) is None:
+                continue  # ACL doesn't match
+
+            # If the config is set to False, everything should be denied.
+            if config is False:
+                return HttpResponse("You are not allowed to upload files.", status=403)
+
+            # shortcut
+            config = config.get('http_upload', False)
+
+            # 'http_upload': False - disable upload for this ACL.
+            if config is False:
+                return HttpResponse("You are not allowed to upload files.", status=403)
+
+            # deny if file is to large
+            if 'max_file_size' in config and config['max_file_size'] > size:
+                message = 'Files may not be larger than %s bytes.' % config['max_file_size']
+                return HttpResponse(message, status=403)
+
 
         hash = get_random_string(64)
         upload = Upload.objects.create(jid=jid, name=name, size=size, type=content_type, hash=hash)
