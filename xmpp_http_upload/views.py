@@ -20,8 +20,10 @@ import json
 import re
 
 from django.conf import settings
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.http import FileResponse
+from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.six.moves.urllib.parse import urlsplit
 from django.views.generic.base import View
@@ -63,8 +65,10 @@ class RequestSlotView(View):
             if config is False:
                 return HttpResponse("You are not allowed to upload files.", status=403)
 
-            # shortcut
+            # shortcuts
             config = config.get('http_upload', False)
+            now = timezone.now()
+            qs = Upload.objects.filter(jid=jid)
 
             # 'http_upload': False - disable upload for this ACL.
             if config is False:
@@ -74,6 +78,22 @@ class RequestSlotView(View):
             if 'max_file_size' in config and config['max_file_size'] > size:
                 message = 'Files may not be larger than %s bytes.' % config['max_file_size']
                 return HttpResponse(message, status=403)
+
+            if 'bytes_per_timedelta' in config:
+                delta = config['bytes_per_timedelta']['delta']
+                quota = config['bytes_per_timedelta']['bytes']
+                uploaded = qs.filter(created__gt=now - delta).aggregate(total=Sum('size'))
+                if uploaded['total'] + size > quota:
+                    return HttpResponse("User is temporarily out of quota.", status=402)
+
+
+            if 'uploads_per_timedelta' in config:
+                delta = config['bytes_per_timedelta']['delta']
+                quota = config['bytes_per_timedelta']['uploads']
+                if qs.filter(created__gt=now - delta).count() > quota:
+                    return HttpResponse("User is temporarily out of quota.", status=402)
+
+            break  # regex matched, not checking any others
 
 
         hash = get_random_string(64)
