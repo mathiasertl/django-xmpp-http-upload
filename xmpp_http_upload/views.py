@@ -41,9 +41,9 @@ class RequestSlotView(View):
 
     def get(self, request, *args, **kwargs):
         try:
-            jid = request.GET['jid']
-            name = request.GET['name']
-            size = int(request.GET['size'])
+            jid = request.GET['jid']  # jid of the uploader
+            name = request.GET['name']  # filename
+            size = int(request.GET['size'])  # filesize
 
             # type is optional:
             content_type = request.GET.get('type')
