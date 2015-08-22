@@ -59,8 +59,9 @@ class RequestSlotView(View):
             return HttpResponse("Empty JID or size passed.", status=400)
 
         for regex, config in _acls:
-            if isinstance(regex, six.string_types) and re.search(regex, jid) is None:
-                continue  # ACL doesn't match
+            if isinstance(regex, six.string_types):
+                if re.search(regex, jid) is None:
+                    continue  # ACL doesn't match
             else:  # received an iterable of regex's
                 matches = False
                 for subex in regex:
