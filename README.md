@@ -70,6 +70,4 @@ initiating the upload. It accepts the following GET parameters:
 ### ToDo
 
 * Write documentation on how to use and configure this app.
-* Actually test upload/download functionality.
-* Allow requesting a slot with a POST request.
 * Allow `application/xml` as output format for a slot request.
