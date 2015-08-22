@@ -35,7 +35,7 @@ from rest_framework.views import APIView
 from .models import Upload
 
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
-_acls = getattr(settings, 'XMPP_HTTP_ACLS', tuple())
+_acls = getattr(settings, 'XMPP_HTTP_UPLOAD_ACCESS', (('.*', False), ))
 
 
 class RequestSlotView(View):

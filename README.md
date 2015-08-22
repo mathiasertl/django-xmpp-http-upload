@@ -13,36 +13,36 @@ all HTTP parts. This Django app can be used together with ejabberds
 The following settings are supported, simply add them to your `settings.py` file (some projects use
 e.g. a file called `localsettings.py`).
 
-* `XMPP_HTTP_ACLS`:
+* `XMPP_HTTP_UPLOAD_ACCESS`: (**mandatory!**)
 
-  A list of tuples of regular expressions and a dictionary of settings. The key `http_upload` is
-  used by this app (and other apps might use different keys). Various subkeys are supported:
+  A list of tuples of regular expressions and a dictionary of settings. Regular expressions might
+  be regular expressions or an iterable of regular expressions.  This setting configures upload
+  permissions and any upload quotas.
 
   ```
-  XMPP_HTTP_ACLS = (
-      '^admin@jabber\.at$': {
+  XMPP_HTTP_UPLOAD_ACCESS = (
+      ('^admin@jabber\.at$', {
           'http_upload': {},  # empty dict -> no restrictions
-      },
-      '^blocked@jabber.at$': False,  # this user isn't allowed to do anything
-      '@jabber\.zone$': {
-          'http_upload': False,  # jabber.zone users cannot upload
-      }, 
-      '@jabber\.at$': {
-          'http_upload': {
-              'max_file_size': 10 * 1024 * 1024,  # 10 MB
-              'bytes_per_timedelta': {  # 1 MB per hour
-                  'delta': timedelta(hours=1),
-                  'bytes': 1024 * 1024,
-              },
-              'bytes_per_timedelta': {  # 3 Uploads per hour
-                  'delta': timedelta(hours=1),
-                  'uploads': 3,
-              },
+      }),
+      ('^blocked@jabber.at$', False),  # this user isn't allowed to upload files
+      # jabber.at and jabber.zone users have some restrictions:
+      (['@jabber\.at$', '@jabber\.zone'], {
+          'max_file_size': 10 * 1024 * 1024,  # 10 MB
+          'bytes_per_timedelta': {  # 1 MB per hour
+              'delta': timedelta(hours=1),
+              'bytes': 1024 * 1024,
           },
-      },
-      '.*': False,  # All other users can't do anything
+          'bytes_per_timedelta': {  # 3 Uploads per hour
+              'delta': timedelta(hours=1),
+              'uploads': 3,
+          },
+      }),
+      ('.*', False),  # All other users can't upload anything either
   )
   ```
+
+  The default is `(('.*', False), )`, so users cannot upload any files. You need to configure
+  something that's sensible for your environment.
 * `XMPP_HTTP_UPLOAD_URL_BASE`:
   The domain used to create upload/download URLs when a new slot is requested by the XMPP server.
   By default, the domain used to access the slot API is used.
