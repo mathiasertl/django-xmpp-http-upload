@@ -97,8 +97,3 @@ initiating the upload. It accepts the following GET parameters:
 
   The format of the output. Currently `text/plain` (the default) and `application/json` is
   supported.
-
-### ToDo
-
-* Write documentation on how to use and configure this app.
-* Allow `application/xml` as output format for a slot request.
