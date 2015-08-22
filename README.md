@@ -25,7 +25,7 @@ e.g. a file called `localsettings.py`).
       },
       '^blocked@jabber.at$': False,  # this user isn't allowed to do anything
       '@jabber\.zone$': {
-          'http_upload': False,  # User might
+          'http_upload': False,  # jabber.zone users cannot upload
       }, 
       '@jabber\.at$': {
           'http_upload': {
