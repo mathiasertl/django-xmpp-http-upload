@@ -113,13 +113,13 @@ XMPP_HTTP_UPLOAD_ACCESS = (
     }),
     ('^blocked@jabber.at$', False),  # this user isn't allowed to upload files
     # jabber.at and jabber.zone users have some restrictions:
-    (['@example\.net$', '@example\.org'], {
+    (['@example\.net$', '@example\.org$'], {
         'max_file_size': 10 * 1024 * 1024,  # 10 MB
         'bytes_per_timedelta': {  # 1 MB per hour
             'delta': timedelta(hours=1),
             'bytes': 1024 * 1024,
         },
-        'bytes_per_timedelta': {  # 3 Uploads per hour
+        'uploads_per_timedelta': {  # 3 Uploads per hour
             'delta': timedelta(hours=1),
             'uploads': 3,
         },
