@@ -30,13 +30,20 @@ e.g. a file called `localsettings.py`).
       ('^blocked@jabber.at$', False),  # this user isn't allowed to upload files
       # jabber.at and jabber.zone users have some restrictions:
       (['@jabber\.at$', '@jabber\.zone$'], {
-          'max_file_size': 512 * 1024,  # no file may be larger then 512 KB
-          'max_total_size': 10 * 1024 * 1024,  # user may not upload more then 10 MB in total
-          'bytes_per_timedelta': {  # 1 MB per hour
+          # User may not upload a file larger then 512 KB:
+          'max_file_size': 512 * 1024,
+
+          # User may not upload more then 10 MB in total
+          'max_total_size': 10 * 1024 * 1024,
+
+          # User may not upload more then 1 MB per hour
+          'bytes_per_timedelta': {
               'delta': timedelta(hours=1),
               'bytes': 1024 * 1024,
           },
-          'uploads_per_timedelta': {  # 3 Uploads per hour
+
+          # User may not do more then three uploads per hour
+          'uploads_per_timedelta': {
               'delta': timedelta(hours=1),
               'uploads': 3,
           },
@@ -46,7 +53,7 @@ e.g. a file called `localsettings.py`).
   ```
 
   The default is `(('.*', False), )`, so users cannot upload any files. You need to configure
-  something that's sensible for your environment.
+  something that is sensible for your environment.
 * `XMPP_HTTP_UPLOAD_URL_BASE`:
   The domain used to create upload/download URLs when a new slot is requested by the XMPP server.
   By default, the domain used to access the slot API is used.
