@@ -23,6 +23,7 @@ from django.conf import settings
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.http import FileResponse
+from django.utils import six
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.six.moves.urllib.parse import urlsplit
@@ -58,8 +59,15 @@ class RequestSlotView(View):
             return HttpResponse("Empty JID or size passed.", status=400)
 
         for regex, config in _acls:
-            if re.search(regex, jid) is None:
+            if isinstance(regex, six.string_types) and re.search(regex, jid) is None:
                 continue  # ACL doesn't match
+            else:  # received an iterable of regex's
+                matches = False
+                for subex in regex:
+                    if re.search(subex, jid):
+                        matches = True
+                if matches is False:
+                    continue
 
             # If the config is set to False, everything should be denied.
             if config is False:
