@@ -19,7 +19,8 @@ e.g. a file called `localsettings.py`).
   expressions) and the second element being quota settings. This setting configures upload
   permissions and any upload quotas. The settings for the first matching regular expression are
   applied, so in the below example, `blocked@jabber.at` will not be able to upload, all other
-  `jabber.at` or `jabber.zone` users will have the configured quotas applied.
+  `jabber.at` or `jabber.zone` users will have the configured quotas applied. Here is a (maybe just
+  a little too restricted) example:
 
   ```python
   XMPP_HTTP_UPLOAD_ACCESS = (
@@ -29,7 +30,8 @@ e.g. a file called `localsettings.py`).
       ('^blocked@jabber.at$', False),  # this user isn't allowed to upload files
       # jabber.at and jabber.zone users have some restrictions:
       (['@jabber\.at$', '@jabber\.zone$'], {
-          'max_file_size': 10 * 1024 * 1024,  # 10 MB
+          'max_file_size': 512 * 1024,  # no file may be larger then 512 KB
+          'max_total_size': 10 * 1024 * 1024,  # user may not upload more then 10 MB in total
           'bytes_per_timedelta': {  # 1 MB per hour
               'delta': timedelta(hours=1),
               'bytes': 1024 * 1024,
