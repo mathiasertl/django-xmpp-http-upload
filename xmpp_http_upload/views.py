@@ -84,6 +84,16 @@ class RequestSlotView(View):
                 message = 'Files may not be larger than %s bytes.' % config['max_file_size']
                 return HttpResponse(message, status=403)
 
+            # deny if total size of uploaded files is too large
+            if 'max_total_size' in config:
+                message = 'Files may not be larger than %s bytes.' % config['max_file_size']
+
+                uploaded = qs.aggregate(total=Sum('size'))
+                if uploaded['total'] is None:  # no uploads by this user yet
+                    uploaded['total'] = 0
+                if uploaded['total'] + size > config['max_total_size']:
+                    return HttpResponse(message, status=403)
+
             if 'bytes_per_timedelta' in config:
                 delta = config['bytes_per_timedelta']['delta']
                 quota = config['bytes_per_timedelta']['bytes']
