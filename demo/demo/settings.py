@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -105,3 +106,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+XMPP_HTTP_UPLOAD_ACCESS = (
+    ('^admin@example\.com$', {
+        'http_upload': {},  # empty dict -> no restrictions
+    }),
+    ('^blocked@jabber.at$', False),  # this user isn't allowed to upload files
+    # jabber.at and jabber.zone users have some restrictions:
+    (['@example\.net$', '@example\.org'], {
+        'max_file_size': 10 * 1024 * 1024,  # 10 MB
+        'bytes_per_timedelta': {  # 1 MB per hour
+            'delta': timedelta(hours=1),
+            'bytes': 1024 * 1024,
+        },
+        'bytes_per_timedelta': {  # 3 Uploads per hour
+            'delta': timedelta(hours=1),
+            'uploads': 3,
+        },
+    }),
+    ('.*', False),  # All other users can't upload anything either
+)
