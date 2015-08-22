@@ -16,10 +16,10 @@
 
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import Client
 from django.test import TestCase
-#from django.utils.six.moves.urllib.parse import urlencode
 
 from .models import Upload
 
@@ -39,3 +39,17 @@ class RequestSlotTestCase(TestCase):
         response = self._slot(jid='blocked@jabber.at', name='example.jpg', size=10)
         self.assertEquals(response.status_code, 403)
         self.assertEquals(Upload.objects.count(), 0)
+
+    def test_max_file_size(self):
+        # try a direct upload
+        response = self._slot(jid='example@example.net', name='example.jpg', size=11 * 1024 * 1024)
+        self.assertEquals(response.status_code, 403)
+        self.assertEquals(Upload.objects.count(), 0)
+
+        response = self._slot(jid='example@example.net', name='example.jpg', size=1 * 1024 * 1024)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(Upload.objects.count(), 1)
+
+        response = self._slot(jid='example@jabber.at', name='example.jpg', size=6 * 1024 * 1024)
+        self.assertEquals(response.status_code, 403)
+        self.assertEquals(Upload.objects.count(), 1)
