@@ -100,6 +100,15 @@ initiating the upload. It accepts the following GET parameters:
   The format of the output. Currently `text/plain` (the default) and `application/json` is
   supported.
 
+### Testing
+
+There is a testcase for the app, run it with:
+
+```
+cd demo
+python manage.py test xmpp_http_upload
+```
+
 ## TODO
 
 * Write unit tests
