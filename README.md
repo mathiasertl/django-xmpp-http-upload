@@ -13,6 +13,36 @@ all HTTP parts. This Django app can be used together with ejabberds
 The following settings are supported, simply add them to your `settings.py` file (some projects use
 e.g. a file called `localsettings.py`).
 
+* `XMPP_HTTP_ACLS`:
+
+  A list of tuples of regular expressions and a dictionary of settings. The key `http_upload` is
+  used by this app (and other apps might use different keys). Various subkeys are supported:
+
+  ```
+  XMPP_HTTP_ACLS = (
+      '^admin@jabber\.at$': {
+          'http_upload': {},  # empty dict -> no restrictions
+      },
+      '^blocked@jabber.at$': False,  # this user isn't allowed to do anything
+      '@jabber\.zone$': {
+          'http_upload': False,  # User might
+      }, 
+      '@jabber\.at$': {
+          'http_upload': {
+              'max_file_size': 10 * 1024 * 1024,  # 10 MB
+              'bytes_per_timedelta': {  # 1 MB per hour
+                  'delta': timedelta(hours=1),
+                  'bytes': 1024 * 1024,
+              },
+              'bytes_per_timedelta': {  # 3 Uploads per hour
+                  'delta': timedelta(hours=1),
+                  'uploads': 3,
+              },
+          },
+      },
+      '.*': False,  # All other users can't do anything
+  )
+  ```
 * `XMPP_HTTP_UPLOAD_URL_BASE`:
   The domain used to create upload/download URLs when a new slot is requested by the XMPP server.
   By default, the domain used to access the slot API is used.
