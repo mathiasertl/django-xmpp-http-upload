@@ -3,7 +3,8 @@
 This is a [Django](https://www.djangoproject.com) app providing functionality for [HTTP File
 Upload](http://xmpp.org/extensions/inbox/http-upload.html), a draft XEP. The idea is
 that an XMPP server gets the relevant upload/download URLs from this app and the app handles
-all HTTP parts. 
+all HTTP parts. This Django app can be used together with ejabberds
+[mod_http_upload](https://github.com/processone/ejabberd-contrib/tree/master/mod_http_upload).
 
 **Warning:** This app is in its early stages of development. Certainly not ready for any use.
 
