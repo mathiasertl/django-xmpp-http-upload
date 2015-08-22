@@ -15,8 +15,8 @@ e.g. a file called `localsettings.py`).
 
 * `XMPP_HTTP_UPLOAD_ACCESS`: (**mandatory!**)
 
-  A list of tuples of regular expressions and a dictionary of settings. Regular expressions might
-  be regular expressions or an iterable of regular expressions.  This setting configures upload
+  A list of two-tuples with the first element being a regular expresion (or list of regular 
+  expressions) and the second element being quota settings. This setting configures upload
   permissions and any upload quotas.
 
   ```
