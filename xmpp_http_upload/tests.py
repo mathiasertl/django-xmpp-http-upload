@@ -16,13 +16,16 @@
 
 from __future__ import unicode_literals
 
-from django.conf import settings
+from datetime import timedelta
+
 from django.core.urlresolvers import reverse
 from django.test import Client
 from django.test import TestCase
+from django.utils import timezone
 
 from .models import Upload
 
+user_jid = 'example@example.net'
 
 class RequestSlotTestCase(TestCase):
     def _slot(self, **kwargs):
@@ -41,15 +44,23 @@ class RequestSlotTestCase(TestCase):
         self.assertEquals(Upload.objects.count(), 0)
 
     def test_max_file_size(self):
-        # try a direct upload
-        response = self._slot(jid='example@example.net', name='example.jpg', size=11 * 1024 * 1024)
+        response = self._slot(jid=user_jid, name='example.jpg', size=1024 * 1024)
         self.assertEquals(response.status_code, 403)
         self.assertEquals(Upload.objects.count(), 0)
 
-        response = self._slot(jid='example@example.net', name='example.jpg', size=1 * 1024 * 1024)
+        response = self._slot(jid=user_jid, name='example.jpg', size=300 * 1024)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(Upload.objects.count(), 1)
 
-        response = self._slot(jid='example@jabber.at', name='example.jpg', size=6 * 1024 * 1024)
+    def test_max_total_size(self):
+        # first, create some uploads manually so we're almost at the limit
+        for i in range(1, 11):
+            Upload.objects.create(jid=user_jid, name='example%s.jpg' % i, size=300 * 1024)
+
+        # created is auto_now, and we cannot override it, but we can update it
+        Upload.objects.update(created=timezone.now() - timedelta(hours=2))
+
+        # now we would be over quota
+        response = self._slot(jid=user_jid, name='example2.jpg', size=300 * 1024)
         self.assertEquals(response.status_code, 403)
-        self.assertEquals(Upload.objects.count(), 1)
+        self.assertEquals(Upload.objects.count(), 10)
