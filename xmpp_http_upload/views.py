@@ -107,7 +107,7 @@ class RequestSlotView(View):
             if 'uploads_per_timedelta' in config:
                 delta = config['uploads_per_timedelta']['delta']
                 quota = config['uploads_per_timedelta']['uploads']
-                if qs.filter(created__gt=now - delta).count() > quota:
+                if qs.filter(created__gt=now - delta).count() + 1 > quota:
                     return HttpResponse("User is temporarily out of quota.", status=402)
 
             break  # regex matched, not checking any others
