@@ -88,6 +88,9 @@ class RequestSlotView(View):
                 delta = config['bytes_per_timedelta']['delta']
                 quota = config['bytes_per_timedelta']['bytes']
                 uploaded = qs.filter(created__gt=now - delta).aggregate(total=Sum('size'))
+                if uploaded['total'] is None:  # no uploads by this user yet
+                    uploaded['total'] = 0
+
                 if uploaded['total'] + size > quota:
                     return HttpResponse("User is temporarily out of quota.", status=402)
 
