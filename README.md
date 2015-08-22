@@ -21,7 +21,7 @@ e.g. a file called `localsettings.py`).
   applied, so in the below example, `blocked@jabber.at` will not be able to upload, all other
   `jabber.at` or `jabber.zone` users will have the configured quotas applied.
 
-  ```
+  ```python
   XMPP_HTTP_UPLOAD_ACCESS = (
       ('^admin@jabber\.at$', {
           'http_upload': {},  # empty dict -> no restrictions
