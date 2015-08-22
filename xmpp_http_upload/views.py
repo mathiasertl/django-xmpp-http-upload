@@ -95,8 +95,8 @@ class RequestSlotView(View):
                     return HttpResponse("User is temporarily out of quota.", status=402)
 
             if 'uploads_per_timedelta' in config:
-                delta = config['bytes_per_timedelta']['delta']
-                quota = config['bytes_per_timedelta']['uploads']
+                delta = config['uploads_per_timedelta']['delta']
+                quota = config['uploads_per_timedelta']['uploads']
                 if qs.filter(created__gt=now - delta).count() > quota:
                     return HttpResponse("User is temporarily out of quota.", status=402)
 
