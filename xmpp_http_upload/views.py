@@ -59,12 +59,12 @@ class RequestSlotView(View):
         except (KeyError, IndexError, ValueError):
             return HttpResponse(status=400)
 
+        if not jid or not size or not name or size <= 0:
+            return HttpResponse("Empty JID or size passed.", status=400)
+
         # replace control characters from jid and name, just to be sure
         jid = control_char_re.sub('', jid)
         name = control_char_re.sub('', name)
-
-        if not jid or not size or not name or size <= 0:
-            return HttpResponse("Empty JID or size passed.", status=400)
 
         for regex, config in _acls:
             if isinstance(regex, six.string_types):
