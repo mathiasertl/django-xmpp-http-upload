@@ -38,6 +38,10 @@ from .models import Upload
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
 _acls = getattr(settings, 'XMPP_HTTP_UPLOAD_ACCESS', (('.*', False), ))
 
+# regex of ascii control chars:
+control_chars = ''.join(map(unichr, range(0,32) + range(127,160)))
+control_char_re = re.compile('[%s]' % re.escape(control_chars))
+
 
 class RequestSlotView(View):
     http_method_names = {'get', 'post', }
@@ -54,6 +58,10 @@ class RequestSlotView(View):
             content_type = request.GET.get('type')
         except (KeyError, IndexError, ValueError):
             return HttpResponse(status=400)
+
+        # replace control characters from jid and name, just to be sure
+        jid = control_char_re.sub('', jid)
+        name = control_char_re.sub('', name)
 
         if not jid or not size or not name or size <= 0:
             return HttpResponse("Empty JID or size passed.", status=400)
