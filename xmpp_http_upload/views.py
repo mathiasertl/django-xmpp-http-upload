@@ -86,7 +86,7 @@ class RequestSlotView(View):
 
             # deny if total size of uploaded files is too large
             if 'max_total_size' in config:
-                message = 'Files may not be larger than %s bytes.' % config['max_file_size']
+                message = 'User may not upload more than %s bytes.' % config['max_total_size']
 
                 uploaded = qs.aggregate(total=Sum('size'))
                 if uploaded['total'] is None:  # no uploads by this user yet
