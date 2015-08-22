@@ -17,7 +17,9 @@ e.g. a file called `localsettings.py`).
 
   A list of two-tuples with the first element being a regular expresion (or list of regular 
   expressions) and the second element being quota settings. This setting configures upload
-  permissions and any upload quotas.
+  permissions and any upload quotas. The settings for the first matching regular expression are
+  applied, so in the below example, `blocked@jabber.at` will not be able to upload, all other
+  `jabber.at` or `jabber.zone` users will have the configured quotas applied.
 
   ```
   XMPP_HTTP_UPLOAD_ACCESS = (
