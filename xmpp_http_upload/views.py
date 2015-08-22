@@ -66,13 +66,8 @@ class RequestSlotView(View):
                 return HttpResponse("You are not allowed to upload files.", status=403)
 
             # shortcuts
-            config = config.get('http_upload', False)
             now = timezone.now()
             qs = Upload.objects.filter(jid=jid)
-
-            # 'http_upload': False - disable upload for this ACL.
-            if config is False:
-                return HttpResponse("You are not allowed to upload files.", status=403)
 
             # deny if file is to large
             if 'max_file_size' in config and config['max_file_size'] > size:
