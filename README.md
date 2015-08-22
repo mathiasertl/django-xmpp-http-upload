@@ -99,3 +99,9 @@ initiating the upload. It accepts the following GET parameters:
 
   The format of the output. Currently `text/plain` (the default) and `application/json` is
   supported.
+
+## TODO
+
+* Write unit tests
+* Write setup.py
+* Write docs on how to integrate this into Django
