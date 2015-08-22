@@ -67,6 +67,7 @@ class RequestSlotView(View):
                 for subex in regex:
                     if re.search(subex, jid):
                         matches = True
+                        break
                 if matches is False:
                     continue
 
@@ -79,7 +80,7 @@ class RequestSlotView(View):
             qs = Upload.objects.filter(jid=jid)
 
             # deny if file is to large
-            if 'max_file_size' in config and config['max_file_size'] > size:
+            if 'max_file_size' in config and size > config['max_file_size']:
                 message = 'Files may not be larger than %s bytes.' % config['max_file_size']
                 return HttpResponse(message, status=403)
 
@@ -89,7 +90,6 @@ class RequestSlotView(View):
                 uploaded = qs.filter(created__gt=now - delta).aggregate(total=Sum('size'))
                 if uploaded['total'] + size > quota:
                     return HttpResponse("User is temporarily out of quota.", status=402)
-
 
             if 'uploads_per_timedelta' in config:
                 delta = config['bytes_per_timedelta']['delta']
