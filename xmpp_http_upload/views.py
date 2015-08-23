@@ -165,7 +165,7 @@ class UploadView(APIView):
 
         return FileResponse(upload.file, content_type=upload.type)
 
-    def put(self, request, hash, filename, format=None):
+    def put(self, request, hash, filename):
         upload = Upload.objects.for_upload().get(hash=hash, name=filename)
         content_type = request.META.get('CONTENT_TYPE', 'application/octet-stream')
 
