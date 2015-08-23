@@ -30,11 +30,9 @@ This assumes you already have an up and running Django instance somewhere.
 
   ```
   urlpatterns = [
-      # your regular URLs
       # ...
-  
-      # upload path, note that you can use any path instead of 'http_upload'.
-      url(r'^http_upload/', include('xmpp_http_upload.urls', namespace='xmpp-http-upload')),
+      # regex can be anything, but namespace is important
+      url(r'^share/', include('xmpp_http_upload.urls', namespace='xmpp-http-upload')),
   ]
   ```
 * And finally run `manage.py migrate` to create the necessary database tables:
