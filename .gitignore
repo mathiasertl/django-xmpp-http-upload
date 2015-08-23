@@ -10,3 +10,4 @@
 /demo/media/
 /dist/
 /*.egg-info/
+/py3/
