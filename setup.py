@@ -36,7 +36,7 @@ setup(
     license="GNU General Public License (GPL) v3",
     packages=find_packages(),
     classifiers=[
-        "Development Status :: 6 - Mature",
+        "Development Status :: 4 - Beta",
         "Environment :: Web Environment",
         "Framework :: Django",
         "Intended Audience :: System Administrators",
