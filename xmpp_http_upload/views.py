@@ -26,7 +26,6 @@ from django.http import FileResponse
 from django.utils import six
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from django.utils.six.moves.urllib.parse import urlsplit
 from django.views.generic.base import View
 
 from rest_framework.parsers import FileUploadParser
@@ -123,26 +122,7 @@ class RequestSlotView(View):
 
         hash = get_random_string(64)
         upload = Upload.objects.create(jid=jid, name=name, size=size, type=content_type, hash=hash)
-
-        location = upload.get_absolute_url()
-        base = getattr(settings, 'XMPP_HTTP_UPLOAD_URL_BASE', None)
-        if base is None:
-            put_url = request.build_absolute_uri(location)
-        else:
-            put_url = '%s%s' % (base, location)
-
-        ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
-        if ws_download is True:
-            get_url = '%s%s/%s/%s' % (settings.MEDIA_URL, _upload_base.strip('/'),
-                                      upload.hash, upload.name)
-            if not urlsplit(get_url).netloc:
-                if base is None:
-                    get_url = request.build_absolute_uri(get_url)
-                else:
-                    get_url = '%s%s' % (base, get_url)
-
-        else:
-            get_url = put_url
+        put_url, get_url = upload.get_urls(request)
 
         output = request.GET.get('output', 'text/plain')
         if output == 'text/plain':

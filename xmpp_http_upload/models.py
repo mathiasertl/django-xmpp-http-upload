@@ -19,12 +19,15 @@ from __future__ import unicode_literals
 import os
 
 from django.conf import settings
-from django.db import models
 from django.core.urlresolvers import reverse
+from django.db import models
+from django.utils.six.moves.urllib.parse import urlsplit
 
 from .querysets import UploadQuerySet
 
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
+_ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
+_upload_url = getattr(settings, 'XMPP_HTTP_UPLOAD_URL_BASE', None)
 
 
 def get_upload_path(instance, filename):
@@ -52,3 +55,24 @@ class Upload(models.Model):
     def get_absolute_url(self):
         return reverse('xmpp-http-upload:share',
                        kwargs={'hash': self.hash, 'filename': self.name})
+
+    def get_urls(self, request):
+        location = self.get_absolute_url()
+        if _upload_url is None:
+            put_url = request.build_absolute_uri(location)
+        else:
+            put_url = '%s%s' % (_upload_url, location)
+
+        if _ws_download is True:
+            get_url = '%s%s/%s/%s' % (settings.MEDIA_URL, _upload_base.strip('/'), self.hash,
+                                      self.name)
+            if not urlsplit(get_url).netloc:
+                if _upload_url is None:
+                    get_url = request.build_absolute_uri(get_url)
+                else:
+                    get_url = '%s%s' % (_upload_url, get_url)
+
+        else:
+            get_url = put_url
+
+        return put_url, get_url
