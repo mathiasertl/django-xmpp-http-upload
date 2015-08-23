@@ -8,6 +8,42 @@ all HTTP parts. This Django app can be used together with ejabberds
 
 **Warning:** This app is in its early stages of development. Certainly not ready for any use.
 
+## Django integration
+
+This assumes you already have an up and running Django instance somewhere. 
+
+* Install **django-xmpp-http-upload** via pip:
+
+  ```
+  pip install django-xmpp-http-upload
+  ```
+
+* Add `"xmpp_http_upload"` to your `INSTALLED_APPS`, in your `settings.py`:
+
+  ```python
+  INSTALLED_APPS = (
+      # ...
+      "xmpp_http_upload",
+  )
+  ```
+* Include URLs in your root `urls.py` (e.g. project/project/urls.py):
+
+  ```
+  urlpatterns = [
+      # your regular URLs
+      # ...
+  
+      # upload path, note that you can use any path instead of 'http_upload'.
+      url(r'^http_upload/', include('xmpp_http_upload.urls', namespace='xmpp-http-upload')),
+  ]
+  ```
+* And finally run `manage.py migrate` to create the necessary database tables:
+
+  ```
+  python manage.py migrate
+  ```
+
+
 ## Settings
 
 The following settings are supported, simply add them to your `settings.py` file (some projects use
