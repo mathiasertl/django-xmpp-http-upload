@@ -161,6 +161,7 @@ class UploadView(APIView):
 
     def get(self, request, hash, filename):
         """Download a file."""
+        # TODO: Do not answer here if XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD is True
         upload = Upload.objects.uploaded().get(hash=hash, name=filename)
 
         return FileResponse(upload.file, content_type=upload.type)
