@@ -8,3 +8,5 @@
 /pip-selfcheck.json
 *.sqlite3
 /demo/media/
+/dist/
+/*.egg-info/
