@@ -41,28 +41,22 @@ def put(path, data, content_type='application/octet-stream', **kwargs):
 
 
 class RequestSlotTestCase(TestCase):
-    def _slot(self, **kwargs):
-        # todo: deprecate this func
-        url = reverse('xmpp-http-upload:slot')
-        c = Client()
-        return c.get(url, kwargs)
-
     def test_slot(self):
-        response = self._slot(jid='admin@example.com', name='example.jpg', size=10)
+        response = slot(jid='admin@example.com', name='example.jpg', size=10)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(Upload.objects.count(), 1)
 
     def test_blocked(self):
-        response = self._slot(jid='blocked@jabber.at', name='example.jpg', size=10)
+        response = slot(jid='blocked@jabber.at', name='example.jpg', size=10)
         self.assertEquals(response.status_code, 403)
         self.assertEquals(Upload.objects.count(), 0)
 
     def test_max_file_size(self):
-        response = self._slot(jid=user_jid, name='example.jpg', size=1024 * 1024)
+        response = slot(jid=user_jid, name='example.jpg', size=1024 * 1024)
         self.assertEquals(response.status_code, 403)
         self.assertEquals(Upload.objects.count(), 0)
 
-        response = self._slot(jid=user_jid, name='example.jpg', size=300 * 1024)
+        response = slot(jid=user_jid, name='example.jpg', size=300 * 1024)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(Upload.objects.count(), 1)
 
@@ -75,32 +69,32 @@ class RequestSlotTestCase(TestCase):
         Upload.objects.update(created=timezone.now() - timedelta(hours=2))
 
         # now we would be over quota
-        response = self._slot(jid=user_jid, name='example%s.jpg' % i, size=300 * 1024)
+        response = slot(jid=user_jid, name='example%s.jpg' % i, size=300 * 1024)
         self.assertEquals(response.status_code, 403)
         self.assertEquals(Upload.objects.count(), 10)
 
     def test_bytes_per_timedelta(self):
         # First, upload to files totalling 800 KB
         for i in range(1, 3):
-            response = self._slot(jid=user_jid, name='example%s.jpg' % i, size=400 * 1024)
+            response = slot(jid=user_jid, name='example%s.jpg' % i, size=400 * 1024)
             self.assertEquals(response.status_code, 200)
             self.assertEquals(Upload.objects.count(), i)
         self.assertEquals(Upload.objects.count(), i)
 
         # next slot would exceed bytes_per_timedelta, but not uploads_per_timedelta
-        response = self._slot(jid=user_jid, name='example%s.jpg' % (i + 1), size=400 * 1024)
+        response = slot(jid=user_jid, name='example%s.jpg' % (i + 1), size=400 * 1024)
         self.assertEquals(response.status_code, 402)
         self.assertEquals(Upload.objects.count(), i)
 
     def test_uploads_per_timedelta(self):
         # first, create some uploads manually so we're almost at the limit
         for i in range(1, 4):
-            response = self._slot(jid=user_jid, name='example%s.jpg' % i, size=10 * 1024)
+            response = slot(jid=user_jid, name='example%s.jpg' % i, size=10 * 1024)
             self.assertEquals(response.status_code, 200)
             self.assertEquals(Upload.objects.count(), i)
         self.assertEquals(Upload.objects.count(), i)
 
-        response = self._slot(jid=user_jid, name='example%s.jpg' % (i + 1), size=10 * 1024)
+        response = slot(jid=user_jid, name='example%s.jpg' % (i + 1), size=10 * 1024)
         self.assertEquals(response.status_code, 402)
         self.assertEquals(Upload.objects.count(), i)
 
@@ -120,4 +114,4 @@ class UploadTest(TestCase):
         # Upload the file
         put_path = urlsplit(put_url).path
         response = put(put_path, file_content)
-        print(response.status_code)
+        self.assertEquals(response.status_code, 201)
