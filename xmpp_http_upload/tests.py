@@ -22,13 +22,27 @@ from django.core.urlresolvers import reverse
 from django.test import Client
 from django.test import TestCase
 from django.utils import timezone
+from django.utils.six.moves.urllib.parse import urlsplit
 
 from .models import Upload
 
 user_jid = 'example@example.net'
 
+
+def slot(**kwargs):
+    url = reverse('xmpp-http-upload:slot')
+    c = Client()
+    return c.get(url, kwargs)
+
+
+def put(path, data, content_type='application/octet-stream', **kwargs):
+    c = Client()
+    return c.put(path, data, content_type=content_type)
+
+
 class RequestSlotTestCase(TestCase):
     def _slot(self, **kwargs):
+        # todo: deprecate this func
         url = reverse('xmpp-http-upload:slot')
         c = Client()
         return c.get(url, kwargs)
@@ -89,3 +103,21 @@ class RequestSlotTestCase(TestCase):
         response = self._slot(jid=user_jid, name='example%s.jpg' % (i + 1), size=10 * 1024)
         self.assertEquals(response.status_code, 402)
         self.assertEquals(Upload.objects.count(), i)
+
+
+class UploadTest(TestCase):
+    def test_basic(self):
+        # The file we will upload
+        file_name = 'example.txt'
+        file_content = 'this is a test'
+
+        # First request a slot
+        response = slot(jid=user_jid, name=file_name, size=len(file_content))
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(Upload.objects.count(), 1)
+        put_url, get_url = response.content.split()
+
+        # Upload the file
+        put_path = urlsplit(put_url).path
+        response = put(put_path, file_content)
+        print(response.status_code)
