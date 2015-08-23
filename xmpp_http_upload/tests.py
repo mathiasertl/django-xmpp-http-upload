@@ -74,7 +74,7 @@ class RequestSlotTestCase(TestCase):
         self.assertEquals(Upload.objects.count(), 10)
 
     def test_bytes_per_timedelta(self):
-        # First, upload to files totalling 800 KB
+        # First, upload two files totalling 800 KB
         for i in range(1, 3):
             response = slot(jid=user_jid, name='example%s.jpg' % i, size=400 * 1024)
             self.assertEquals(response.status_code, 200)
