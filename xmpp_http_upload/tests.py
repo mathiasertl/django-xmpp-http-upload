@@ -115,7 +115,7 @@ class UploadTest(TestCase):
         response = slot(jid=user_jid, name=file_name, size=len(file_content))
         self.assertEquals(response.status_code, 200)
         self.assertEquals(Upload.objects.count(), 1)
-        put_url, get_url = response.content.split()
+        put_url, get_url = response.content.decode('utf-8').split()
 
         # Upload the file
         put_path = urlsplit(put_url).path
@@ -132,7 +132,7 @@ class UploadTest(TestCase):
         self.assertEquals(response.status_code, 200)
         data = list(response.streaming_content)
         self.assertEquals(len(data), 1)
-        self.assertEquals(data[0], file_content)
+        self.assertEquals(data[0].decode('utf-8'), file_content)
 
         # remove file
         upload.file.delete(save=True)
