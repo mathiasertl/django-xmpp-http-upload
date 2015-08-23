@@ -61,7 +61,7 @@ class RequestSlotTestCase(TestCase):
         Upload.objects.update(created=timezone.now() - timedelta(hours=2))
 
         # now we would be over quota
-        response = self._slot(jid=user_jid, name='example12.jpg', size=300 * 1024)
+        response = self._slot(jid=user_jid, name='example%s.jpg' % i, size=300 * 1024)
         self.assertEquals(response.status_code, 403)
         self.assertEquals(Upload.objects.count(), 10)
 
