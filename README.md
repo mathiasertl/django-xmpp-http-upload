@@ -6,8 +6,6 @@ that an XMPP server gets the relevant upload/download URLs from this app and the
 all HTTP parts. This Django app can be used together with ejabberds
 [mod_http_upload](https://github.com/processone/ejabberd-contrib/tree/master/mod_http_upload).
 
-**Warning:** This app is in its early stages of development. Certainly not ready for any use.
-
 ## Django integration
 
 This assumes you already have an up and running Django instance somewhere. 
@@ -40,7 +38,10 @@ This assumes you already have an up and running Django instance somewhere.
   ```
   python manage.py migrate
   ```
-
+* Make sure you have a working setup for [managing
+  files](https://docs.djangoproject.com/en/1.8/topics/files/), in particular, the `MEDIA_ROOT` and
+  `MEDIA_URL` settings have to be correctly configured. The app uses some custom settings as well,
+  see below.
 
 ## Settings
 
@@ -149,3 +150,9 @@ python manage.py test xmpp_http_upload
 * Write unit tests
 * Write setup.py
 * Write docs on how to integrate this into Django
+
+## ChangeLog
+
+### 0.1 (2015-08-23)
+
+* Initial version.
