@@ -40,6 +40,11 @@ def put(path, data, content_type='application/octet-stream', **kwargs):
     return c.put(path, data, content_type=content_type)
 
 
+def get(path):
+    c = Client()
+    return c.get(path)
+
+
 class RequestSlotTestCase(TestCase):
     def test_slot(self):
         response = slot(jid='admin@example.com', name='example.jpg', size=10)
@@ -106,6 +111,7 @@ class UploadTest(TestCase):
         file_content = 'this is a test'
 
         # First request a slot
+        self.assertEquals(Upload.objects.count(), 0)
         response = slot(jid=user_jid, name=file_name, size=len(file_content))
         self.assertEquals(response.status_code, 200)
         self.assertEquals(Upload.objects.count(), 1)
@@ -115,3 +121,18 @@ class UploadTest(TestCase):
         put_path = urlsplit(put_url).path
         response = put(put_path, file_content)
         self.assertEquals(response.status_code, 201)
+
+        # Get the object, verify that the same URLs are generated
+        upload = Upload.objects.all()[0]  # we verified there is exactly one above
+        self.assertEqual((put_url, get_url), upload.get_urls(response.wsgi_request))
+
+        # try to download it
+        self.assertEqual(upload.file.url, urlsplit(get_url).path)
+        response = get(upload.file.url)
+        self.assertEquals(response.status_code, 200)
+        data = list(response.streaming_content)
+        self.assertEquals(len(data), 1)
+        self.assertEquals(data[0], file_content)
+
+        # remove file
+        upload.file.delete(save=True)
