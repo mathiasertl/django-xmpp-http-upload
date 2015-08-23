@@ -13,6 +13,8 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+
+from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 
@@ -20,3 +22,13 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^http_upload/', include('xmpp_http_upload.urls', namespace='xmpp-http-upload')),
 ]
+
+if settings.DEBUG == False:
+    urlpatterns += [
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+        url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.STATIC_ROOT,
+        }),
+    ]
