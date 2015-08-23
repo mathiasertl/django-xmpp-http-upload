@@ -126,22 +126,14 @@ http://127.0.0.1:8000/http_upload/slot/?jid=user@example.com&size=10240&name=exa
 The slot API is the API an XMPP uses to request an upload slot that can be forwarded to the user
 initiating the upload. It accepts the following GET parameters:
 
-* `jid` (mandatory)
-
-  The JID of the user initiating the request. Note that the JID has to be URL-encoded.
-* `name` (mandatory)
-
-  The name of the file.
-* `size` (mandatory)
-
-  The file size.
-* `content_type`
-
-  The content type of the file that will be uploaded. According to the XEP, this is optional.
-* `output`
-
-  The format of the output. Currently `text/plain` (the default) and `application/json` is
-  supported.
+* `jid` (mandatory): The JID of the user initiating the request. Note that the JID has to be
+  URL-encoded.
+* `name` (mandatory): The name of the file.
+* `size` (mandatory): The file size.
+* `content_type`: The content type of the file that will be uploaded. According to the XEP, this is
+  optional.
+* `output`: The format of the output. Currently `text/plain` (the default) and `application/json`
+  is supported.
 
 ### Testing
 
