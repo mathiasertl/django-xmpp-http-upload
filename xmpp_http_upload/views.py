@@ -38,7 +38,7 @@ _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
 _acls = getattr(settings, 'XMPP_HTTP_UPLOAD_ACCESS', (('.*', False), ))
 
 # regex of ascii control chars:
-control_chars = ''.join(map(unichr, range(0,32) + range(127,160)))
+control_chars = ''.join(map(six.unichr, list(range(0,32)) + list(range(127,160))))
 control_char_re = re.compile('[%s]' % re.escape(control_chars))
 
 
