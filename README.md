@@ -48,11 +48,12 @@ This assumes you already have an up and running Django instance somewhere.
 
 Care should be taken to secure your webserver:
 
-* The slot API (`/share/slot/` in the above example should only be reachable from the XMPP server,
-  otherwise anyone might request a slot.
+* The slot API (`/share/slot/` in the above example) should only be reachable from the XMPP server,
+   otherwise anyone might request a slot.
 * The directory where files are uploaded should have no directory indexes and should not allow any
   .htaccess overrides. This app uploads all files into the directory configured by
-  `XMPP_HTTP_UPLOAD_ROOT`, which is a subdirectory of `MEDIA_ROOT`.
+  `XMPP_HTTP_UPLOAD_ROOT`, which is a subdirectory of `MEDIA_ROOT`. By default, that's
+  `http_upload`.
 
 Here is what is recommended for Apache:
 
