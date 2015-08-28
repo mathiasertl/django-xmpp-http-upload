@@ -44,6 +44,31 @@ This assumes you already have an up and running Django instance somewhere.
   `MEDIA_URL` settings have to be correctly configured. The app uses some custom settings as well,
   see below.
 
+## Webserver security
+
+Care should be taken to secure your webserver:
+
+* The slot API (`/share/slot/` in the above example should only be reachable from the XMPP server,
+  otherwise anyone might request a slot.
+* The directory where files are uploaded should have no directory indexes and should not allow any
+  .htaccess overrides. This app uploads all files into the directory configured by
+  `XMPP_HTTP_UPLOAD_ROOT`, which is a subdirectory of `MEDIA_ROOT`.
+
+Here is what is recommended for Apache:
+
+```apache
+<Location /share/slot>
+    # Restrict the slot api:
+    Require ip 127.0.0.1
+</Location>
+
+<Directory /var/www/upload.example.com/media/http_upload>
+    # Lock down the upload directory (you might want to do this for all of media...)
+    Options -FollowSymLinks -Indexes -ExecCGI -MultiViews
+    AllowOverride none
+</Directory>
+```
+
 ## Settings
 
 The following settings are supported, simply add them to your `settings.py` file (some projects use
