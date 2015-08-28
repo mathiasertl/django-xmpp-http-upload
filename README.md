@@ -24,6 +24,7 @@ This assumes you already have an up and running Django instance somewhere.
       "xmpp_http_upload",
   )
   ```
+* Add settings described below to to your `settings.py`.
 * Include URLs in your root `urls.py` (e.g. project/project/urls.py):
 
   ```
