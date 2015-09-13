@@ -40,17 +40,22 @@ class UploadQuerySet(models.QuerySet):
     def uploaded(self):
         return self.exclude(file='')
 
-    def cleanup(self):
+    def cleanup(self, slots=True, files=True, timeout=None):
         # Just remove expired keys
-        self.expired().delete()
+        if slots is True:
+            self.expired().delete()
 
-        expired = timezone.now() - _share_timeout
-        queryset = self.filter(created__lt=expired)
-        for instance in queryset:
-            path = os.path.dirname(instance.file.path)
-            instance.file.delete(save=False)  # files are deleted anyway ;-)
+        if files is True:
+            if timeout is None:
+                timeout = _share_timeout
 
-            # remove any remaining empty directories
-            if os.path.exists(path) and not os.listdir(path):
-                os.rmdir(path)
-        queryset.delete()
+            expired = timezone.now() - timeout
+            queryset = self.filter(created__lt=expired)
+            for instance in queryset:
+                path = os.path.dirname(instance.file.path)
+                instance.file.delete(save=False)  # files are deleted anyway ;-)
+
+                # remove any remaining empty directories
+                if os.path.exists(path) and not os.listdir(path):
+                    os.rmdir(path)
+            queryset.delete()
