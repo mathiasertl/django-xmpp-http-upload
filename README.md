@@ -201,8 +201,9 @@ python manage.py test xmpp_http_upload
 
 ## ChangeLog
 
-### 0.2 (2015-09-15)
+### 0.2.1 (2015-09-15)
 
+* We can no longer use 0.2, because PyPi does not allow reuploading of versions.
 * New management command `cleanup_http_uploads` to cleanup old file uploads.
 * Integrate the Upload slots into the default admin interface provided by Django.
 * Increase maximum filename length to 255 chars (was: 100, Djangos default).
