@@ -175,8 +175,6 @@ python manage.py test xmpp_http_upload
 ## TODO
 
 * Write unit tests
-* Write setup.py
-* Write docs on how to integrate this into Django
 
 ## ChangeLog
 
