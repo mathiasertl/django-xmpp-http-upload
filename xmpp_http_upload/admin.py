@@ -16,7 +16,6 @@ class UploadedListFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         value = self.value()
-        print(value, type(value))
         if value == '2':
             return queryset.expired()
         elif value == '1':
