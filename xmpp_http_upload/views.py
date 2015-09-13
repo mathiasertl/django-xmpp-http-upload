@@ -91,7 +91,7 @@ class RequestSlotView(View):
             # deny if file is to large
             if 'max_file_size' in config and size > config['max_file_size']:
                 message = 'Files may not be larger than %s bytes.' % config['max_file_size']
-                return HttpResponse(message, status=412)
+                return HttpResponse(message, status=413)
 
             # deny if total size of uploaded files is too large
             if 'max_total_size' in config:
@@ -129,7 +129,7 @@ class RequestSlotView(View):
         file_field = Upload._meta.get_field('file')
         if len(file_field.upload_to(upload, name)) > file_field.max_length:
             message = 'Filename must not be longer then %s characters.' % file_field.max_length
-            return HttpResponse(message, status=412)
+            return HttpResponse(message, status=413)
 
         put_url, get_url = upload.get_urls(request)
         upload.save()
