@@ -16,6 +16,8 @@
 
 from __future__ import unicode_literals
 
+import os
+
 from datetime import timedelta
 
 from django.conf import settings
@@ -23,6 +25,7 @@ from django.db import models
 from django.utils import timezone
 
 _put_timeout = timedelta(seconds=int(getattr(settings, 'XMPP_HTTP_UPLOAD_PUT_TIMEOUT', 360)))
+_share_timeout = timedelta(seconds=int(getattr(settings, 'XMPP_HTTP_UPLOAD_SHARE_TIMEOUT', 86400 * 30)))
 
 
 class UploadQuerySet(models.QuerySet):
@@ -36,3 +39,18 @@ class UploadQuerySet(models.QuerySet):
 
     def uploaded(self):
         return self.exclude(file='')
+
+    def cleanup(self):
+        # Just remove expired keys
+        self.expired().delete()
+
+        expired = timezone.now() - _share_timeout
+        queryset = self.filter(created__lt=expired)
+        for instance in queryset:
+            path = os.path.dirname(instance.file.path)
+            instance.file.delete(save=False)  # files are deleted anyway ;-)
+
+            # remove any remaining empty directories
+            if os.path.exists(path) and not os.listdir(path):
+                os.rmdir(path)
+        queryset.delete()
