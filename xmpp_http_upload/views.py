@@ -122,8 +122,17 @@ class RequestSlotView(View):
             break  # regex matched, not checking any others
 
         hash = get_random_string(64)
-        upload = Upload.objects.create(jid=jid, name=name, size=size, type=content_type, hash=hash)
+        upload = Upload(jid=jid, name=name, size=size, type=content_type, hash=hash)
+
+        # Test if the filename is to long. Djangos FileField silently truncates to max_length, 
+        # so if the filename is too long, users will get a HTTP 404 when downloading the file.
+        file_field = Upload._meta.get_field('file')
+        if len(file_field.upload_to(upload, name)) > file_field.max_length:
+            message = 'Filename must not be longer then %s characters.' % file_field.max_length
+            return HttpResponse(message, status=412)
+
         put_url, get_url = upload.get_urls(request)
+        upload.save()
 
         output = request.GET.get('output', 'text/plain')
         if output == 'text/plain':
