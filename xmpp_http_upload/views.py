@@ -62,6 +62,8 @@ class RequestSlotView(View):
 
         if not jid or not size or not name or size <= 0:
             return HttpResponse("Empty JID or size passed.", status=400)
+        if '/' in name:
+            return HttpResponseForbidden('No slashes in filenames allowed.')
 
         # replace control characters from jid and name, just to be sure
         jid = control_char_re.sub('', jid)
