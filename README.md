@@ -201,6 +201,13 @@ python manage.py test xmpp_http_upload
 
 ## ChangeLog
 
+### 0.3 (2015-09-15)
+
+* Fix Slot-API (ups!).
+* Do not allow any slots where the filename contains a slash. Django should handle this, but just
+  to be sure.
+* Return HTTP 413 instead of HTTP 412, as requested by mod_http_upload.
+
 ### 0.2.1 (2015-09-15)
 
 * We can no longer use 0.2, because PyPi does not allow reuploading of versions.
