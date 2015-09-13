@@ -150,7 +150,10 @@ class UploadView(APIView):
         return FileResponse(upload.file, content_type=upload.type)
 
     def put(self, request, hash, filename):
-        upload = Upload.objects.for_upload().get(hash=hash, name=filename)
+        try:
+            upload = Upload.objects.for_upload().get(hash=hash, name=filename)
+        except Upload.DoesNotExist:
+            return HttpResponseForbidden()
         content_type = request.META.get('CONTENT_TYPE', 'application/octet-stream')
 
         if int(request.META['CONTENT_LENGTH']) != upload.size:
