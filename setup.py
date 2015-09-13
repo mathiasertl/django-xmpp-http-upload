@@ -19,16 +19,16 @@ from __future__ import unicode_literals
 from setuptools import find_packages
 from setuptools import setup
 
-version = '0.1'
+version = '0.2'
 requires = [
     'Django>=1.8.4',
-    'djangorestframework>=3.2.2',
+    'djangorestframework>=3.2.3',
 ]
 
 setup(
     name='django-xmpp-http-upload',
     version=version,
-    description='Provides XEP-xxxx: HTTP File Upload',
+    description='Provides XEP-0363: HTTP File Upload',
     author='Mathias Ertl',
     author_email='mati@jabber.at',
     url='https://github.com/mathiasertl/django-xmpp-http-upload',
@@ -51,5 +51,5 @@ setup(
         "Topic :: Communications :: File Sharing",
     ],
     long_description="""A Django app providing the http-based functionality for
-`http://xmpp.org/extensions/inbox/http-upload.html <http://xmpp.org/extensions/inbox/http-upload.html>`."""
+    `http://www.xmpp.org/extensions/xep-0363.html <XEP-0363: HTTP File Upload>`_."""
 )
