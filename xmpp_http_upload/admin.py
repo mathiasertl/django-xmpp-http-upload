@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import Upload
 
+
 class UploadedListFilter(admin.SimpleListFilter):
     title = _('Uploaded')
     parameter_name = 'uploaded'

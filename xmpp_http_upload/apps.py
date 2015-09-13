@@ -18,6 +18,7 @@ from __future__ import unicode_literals
 
 from django.apps import AppConfig
 
+
 class XmppHttpUploadAppConfig(AppConfig):
     name = 'xmpp_http_upload'
     verbose_name = 'XEP-0363: HTTP File Upload'

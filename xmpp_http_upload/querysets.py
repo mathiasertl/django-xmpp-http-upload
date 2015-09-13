@@ -25,7 +25,8 @@ from django.db import models
 from django.utils import timezone
 
 _put_timeout = timedelta(seconds=int(getattr(settings, 'XMPP_HTTP_UPLOAD_PUT_TIMEOUT', 360)))
-_share_timeout = timedelta(seconds=int(getattr(settings, 'XMPP_HTTP_UPLOAD_SHARE_TIMEOUT', 86400 * 30)))
+_share_timeout = timedelta(seconds=int(
+    getattr(settings, 'XMPP_HTTP_UPLOAD_SHARE_TIMEOUT', 86400 * 30)))
 
 
 class UploadQuerySet(models.QuerySet):

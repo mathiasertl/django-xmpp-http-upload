@@ -124,7 +124,7 @@ class RequestSlotView(View):
         hash = get_random_string(32)
         upload = Upload(jid=jid, name=name, size=size, type=content_type, hash=hash)
 
-        # Test if the filename is to long. Djangos FileField silently truncates to max_length, 
+        # Test if the filename is to long. Djangos FileField silently truncates to max_length,
         # so if the filename is too long, users will get a HTTP 404 when downloading the file.
         file_field = Upload._meta.get_field('file')
         if len(file_field.upload_to(upload, name)) > file_field.max_length:
