@@ -51,5 +51,5 @@ setup(
         "Topic :: Communications :: File Sharing",
     ],
     long_description="""A Django app providing the http-based functionality for
-    `http://www.xmpp.org/extensions/xep-0363.html <XEP-0363: HTTP File Upload>`_."""
+    `XEP-0363: HTTP File Upload <http://www.xmpp.org/extensions/xep-0363.html>`_."""
 )
