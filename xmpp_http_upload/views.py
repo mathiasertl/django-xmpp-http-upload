@@ -82,7 +82,7 @@ class RequestSlotView(View):
 
             # If the config is set to False, everything should be denied.
             if config is False:
-                return HttpResponse("You are not allowed to upload files.", status=403)
+                return HttpResponseForbidden("You are not allowed to upload files.")
 
             # shortcuts
             now = timezone.now()
@@ -91,7 +91,7 @@ class RequestSlotView(View):
             # deny if file is to large
             if 'max_file_size' in config and size > config['max_file_size']:
                 message = 'Files may not be larger than %s bytes.' % config['max_file_size']
-                return HttpResponse(message, status=403)
+                return HttpResponseForbidden(message)
 
             # deny if total size of uploaded files is too large
             if 'max_total_size' in config:
@@ -101,7 +101,7 @@ class RequestSlotView(View):
                 if uploaded['total'] is None:  # no uploads by this user yet
                     uploaded['total'] = 0
                 if uploaded['total'] + size > config['max_total_size']:
-                    return HttpResponse(message, status=403)
+                    return HttpResponseForbidden(message)
 
             if 'bytes_per_timedelta' in config:
                 delta = config['bytes_per_timedelta']['delta']
