@@ -19,7 +19,7 @@ from __future__ import unicode_literals
 from setuptools import find_packages
 from setuptools import setup
 
-version = '0.2.1'
+version = '0.3'
 requires = [
     'Django>=1.8.4',
     'djangorestframework>=3.2.3',
@@ -51,5 +51,5 @@ setup(
         "Topic :: Communications :: File Sharing",
     ],
     long_description="""A Django app providing the http-based functionality for
-    `XEP-0363: HTTP File Upload <http://www.xmpp.org/extensions/xep-0363.html>`_."""
+`XEP-0363: HTTP File Upload <http://www.xmpp.org/extensions/xep-0363.html>`_."""
 )
