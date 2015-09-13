@@ -43,6 +43,7 @@ This assumes you already have an up and running Django instance somewhere.
   files](https://docs.djangoproject.com/en/1.8/topics/files/), in particular, the `MEDIA_ROOT` and
   `MEDIA_URL` settings have to be correctly configured. The app uses some custom settings as well,
   see below.
+* Ensure that you [cleanup old files](#user-content-cleanup-of-old-files).
 
 ## Webserver security
 
