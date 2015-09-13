@@ -43,7 +43,7 @@ control_char_re = re.compile('[%s]' % re.escape(control_chars))
 
 
 class RequestSlotView(View):
-    http_method_names = {'get', 'post', }
+    http_method_names = {'get', }
 
     # TODO: do some general checks (e.g. origin of request?) in the dispatch method
 
