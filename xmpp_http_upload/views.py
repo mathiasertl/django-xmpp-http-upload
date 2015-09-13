@@ -91,7 +91,7 @@ class RequestSlotView(View):
             # deny if file is to large
             if 'max_file_size' in config and size > config['max_file_size']:
                 message = 'Files may not be larger than %s bytes.' % config['max_file_size']
-                return HttpResponseForbidden(message)
+                return HttpResponse(message, status=412)
 
             # deny if total size of uploaded files is too large
             if 'max_total_size' in config:
