@@ -22,6 +22,7 @@ import re
 from django.conf import settings
 from django.db.models import Sum
 from django.http import HttpResponse
+from django.http import HttpResponseForbidden
 from django.http import FileResponse
 from django.utils import six
 from django.utils import timezone
@@ -36,6 +37,7 @@ from .models import Upload
 
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
 _acls = getattr(settings, 'XMPP_HTTP_UPLOAD_ACCESS', (('.*', False), ))
+_ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
 
 # regex of ascii control chars:
 control_chars = ''.join(map(six.unichr, list(range(0,32)) + list(range(127,160))))
@@ -141,7 +143,8 @@ class UploadView(APIView):
 
     def get(self, request, hash, filename):
         """Download a file."""
-        # TODO: Do not answer here if XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD is True
+        if _ws_download is True:
+            return HttpResponseForbidden()
         upload = Upload.objects.uploaded().get(hash=hash, name=filename)
 
         return FileResponse(upload.file, content_type=upload.type)
