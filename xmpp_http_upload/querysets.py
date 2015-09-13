@@ -48,6 +48,8 @@ class UploadQuerySet(models.QuerySet):
         if files is True:
             if timeout is None:
                 timeout = _share_timeout
+            else:
+                timeout = timedelta(seconds=timeout)
 
             expired = timezone.now() - timeout
             queryset = self.filter(created__lt=expired)
