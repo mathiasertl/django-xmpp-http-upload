@@ -134,6 +134,22 @@ e.g. a file called `localsettings.py`).
 
 ## Cleanup of old files
 
+The `cleanup_http_uploads` management command should be used to periodically clean up old files.
+Note that this is not really an optional step, otherwise the app will soon eat up all available
+diskspace. Also in combination with `max_total_size` setting in `XMPP_HTTP_UPLOAD_ACCESS`, users
+would never again be able to upload any files once they've reached their quota. This example
+crontab would cleanup old files every day at 1 a.m.:
+
+```
+# Location of your Django app
+HOME=/home/django/your-app
+# If you use virtualenv, the location of its bin/ dir:
+#PATH=/home/django/bin/
+
+# m h   dom mon dow     user            command
+0 1     * * *           root            python manage.py cleanup_http_uploads
+```
+
 ## Development
 
 If you want to use this app to develop e.g. a plugin for an XMPP server, you can simply do the
