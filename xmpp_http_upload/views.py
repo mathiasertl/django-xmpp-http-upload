@@ -121,7 +121,7 @@ class RequestSlotView(View):
 
             break  # regex matched, not checking any others
 
-        hash = get_random_string(64)
+        hash = get_random_string(32)
         upload = Upload(jid=jid, name=name, size=size, type=content_type, hash=hash)
 
         # Test if the filename is to long. Djangos FileField silently truncates to max_length, 
