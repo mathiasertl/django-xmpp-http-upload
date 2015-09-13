@@ -40,7 +40,7 @@ _acls = getattr(settings, 'XMPP_HTTP_UPLOAD_ACCESS', (('.*', False), ))
 _ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
 
 # regex of ascii control chars:
-control_chars = ''.join(map(six.unichr, list(range(0,32)) + list(range(127,160))))
+control_chars = ''.join(map(six.unichr, list(range(0, 32)) + list(range(127, 160))))
 control_char_re = re.compile('[%s]' % re.escape(control_chars))
 
 
@@ -120,7 +120,6 @@ class RequestSlotView(View):
                     return HttpResponse("User is temporarily out of quota.", status=402)
 
             break  # regex matched, not checking any others
-
 
         hash = get_random_string(64)
         upload = Upload.objects.create(jid=jid, name=name, size=size, type=content_type, hash=hash)
