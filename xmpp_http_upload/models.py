@@ -49,7 +49,7 @@ class Upload(models.Model):
     hash = models.CharField(max_length=64)
 
     # Populated when the file is uploaded
-    file = models.FileField(upload_to=get_upload_path, null=True, blank=True)
+    file = models.FileField(upload_to=get_upload_path, null=True, blank=True, max_length=255)
     uploaded = models.DateTimeField(null=True, blank=True)
 
     def get_absolute_url(self):
