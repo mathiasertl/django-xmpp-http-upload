@@ -196,8 +196,22 @@ python manage.py test xmpp_http_upload
 ## TODO
 
 * Write unit tests
+* Write cleanup celery task
 
 ## ChangeLog
+
+### 0.2 (2015-09-15)
+
+* New management command `cleanup_http_uploads` to cleanup old file uploads.
+* Integrate the Upload slots into the default admin interface provided by Django.
+* Increase maximum filename length to 255 chars (was: 100, Djangos default).
+* Return HTTP 412 if user requests a slot with a filename that's too long.
+* The size of the random hash is decreased to 32 characters, decreasing likelyhood of such a 
+  HTTP 412.
+* Only actually serve Upload slots if `XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD` is actually set to
+  True. Previously the URL was just not advertised, but users could theoretically still use it.
+* Catch HTTP 500 if a non-existing slot is used (or user attempts to reuse a slot).
+* Update dependencies, code-style now fully conforms with pep8.
 
 ### 0.1 (2015-08-23)
 
