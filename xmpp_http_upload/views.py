@@ -138,12 +138,15 @@ class RequestSlotView(View):
 
         output = request.GET.get('output', 'text/plain')
         if output == 'text/plain':
-            return HttpResponse('%s\n%s' % (put_url, get_url), content_type=output)
+            content = '%s\n%s' % (put_url, get_url)
+            response = HttpResponse(content, content_type=output)
+            response['Content-Type'] = len(content)
+            return response
         elif output == 'application/json':
             content = json.dumps({'get': get_url, 'put': put_url})
-            return HttpResponse(content, content_type=output)
-        # TODO: Support XML as output format (certainly useful b/c XMPP servers already need to
-        #       have support for XML
+            response = HttpResponse(content, content_type=output)
+            response['Content-Type'] = len(content)
+            return response
         else:
             return HttpResponse("Unsupported content type in output.", status=400)
 

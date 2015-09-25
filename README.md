@@ -196,10 +196,16 @@ python manage.py test xmpp_http_upload
 
 ## TODO
 
+* Exclude API from CSRF protection to reduce overhead.
 * Write unit tests
 * Write cleanup celery task
 
 ## ChangeLog
+
+### 0.4 (2015-09-XX)
+
+* Set a Content-Length API in the Slot API, causing Django **not** to send chunked requests,
+  ejabberd was sometimes choking on the responses.
 
 ### 0.3 (2015-09-15)
 
