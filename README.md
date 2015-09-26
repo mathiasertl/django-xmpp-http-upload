@@ -133,8 +133,8 @@ e.g. a file called `localsettings.py`).
   Set to `False` if your webserver does not serve media files (see Djangos `MEDIA_URL` setting)
   and want the app itself to serve downloaded files.
 * `XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH`:
-  Set to `True` to add the `Content-Length` header Slot API responses. A Content-Length header
-  leads to HTTP responses not using [chunked transfer
+  Set to `True` to add the `Content-Length` header Slot API responses. The header leads to HTTP
+  responses not using [chunked transfer
   encoding](https://en.wikipedia.org/wiki/Chunked_transfer_encoding). Erlangs HTTP client seems to
   have problems with this in some situations.
 
