@@ -22,7 +22,7 @@ from setuptools import setup
 version = '0.3'
 requires = [
     'Django>=1.8.4',
-    'djangorestframework>=3.2.3',
+    'djangorestframework>=3.2.4',
 ]
 
 setup(
