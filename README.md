@@ -132,6 +132,11 @@ e.g. a file called `localsettings.py`).
 * `XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD`:
   Set to `False` if your webserver does not serve media files (see Djangos `MEDIA_URL` setting)
   and want the app itself to serve downloaded files.
+* `XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH`:
+  Set to `True` to add the `Content-Length` header Slot API responses. A Content-Length header
+  leads to HTTP responses not using [chunked transfer
+  encoding](https://en.wikipedia.org/wiki/Chunked_transfer_encoding). Erlangs HTTP client seems to
+  have problems with this in some situations.
 
 ## Cleanup of old files
 
@@ -204,6 +209,9 @@ python manage.py test xmpp_http_upload
 
 ### 0.4 (2015-09-XX)
 
+* Add the option `XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH` to add the `Content-Length` header in
+  responses. This leads to the response not being chunked, Erlang seems to choke on chunked
+  responses.
 * Fix constructing of media URLs (when `XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD` is `True`) with
   non-ascii characters.
 

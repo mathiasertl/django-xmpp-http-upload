@@ -38,6 +38,7 @@ from .models import Upload
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
 _acls = getattr(settings, 'XMPP_HTTP_UPLOAD_ACCESS', (('.*', False), ))
 _ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
+_add_content_length = getattr(settings, 'XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH', False)
 
 # regex of ascii control chars:
 control_chars = ''.join(map(six.unichr, list(range(0, 32)) + list(range(127, 160))))
@@ -139,12 +140,15 @@ class RequestSlotView(View):
         output = request.GET.get('output', 'text/plain')
         if output == 'text/plain':
             content = '%s\n%s' % (put_url, get_url)
-            return HttpResponse(content, content_type=output)
         elif output == 'application/json':
             content = json.dumps({'get': get_url, 'put': put_url})
-            return HttpResponse(content, content_type=output)
         else:
             return HttpResponse("Unsupported content type in output.", status=400)
+
+        response = HttpResponse(content, content_type=output)
+        if _add_content_length is True:
+            response['Content-Length'] = len(content)
+        return response
 
 
 class UploadView(APIView):
