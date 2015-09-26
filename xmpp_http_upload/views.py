@@ -140,12 +140,12 @@ class RequestSlotView(View):
         if output == 'text/plain':
             content = '%s\n%s' % (put_url, get_url)
             response = HttpResponse(content, content_type=output)
-            response['Content-Type'] = len(content)
+            response['Content-Length'] = len(content)
             return response
         elif output == 'application/json':
             content = json.dumps({'get': get_url, 'put': put_url})
             response = HttpResponse(content, content_type=output)
-            response['Content-Type'] = len(content)
+            response['Content-Length'] = len(content)
             return response
         else:
             return HttpResponse("Unsupported content type in output.", status=400)
