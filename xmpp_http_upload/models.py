@@ -21,6 +21,7 @@ import os
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils.six.moves.urllib.parse import quote
 from django.utils.six.moves.urllib.parse import urlsplit
 
 from .querysets import UploadQuerySet
@@ -65,7 +66,8 @@ class Upload(models.Model):
 
         if _ws_download is True:
             get_url = '%s%s/%s/%s' % (settings.MEDIA_URL, _upload_base.strip('/'), self.hash,
-                                      self.name)
+                                      quote(self.name.encode('utf-8')))
+
             if not urlsplit(get_url).netloc:
                 if _upload_url is None:
                     get_url = request.build_absolute_uri(get_url)

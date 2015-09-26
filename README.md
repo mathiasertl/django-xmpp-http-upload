@@ -206,6 +206,8 @@ python manage.py test xmpp_http_upload
 
 * Set a Content-Length API in the Slot API, causing Django **not** to send chunked requests,
   ejabberd was sometimes choking on the responses.
+* Fix constructing of media URLs (when `XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD` is `True`) with
+  non-ascii characters.
 
 ### 0.3 (2015-09-15)
 
