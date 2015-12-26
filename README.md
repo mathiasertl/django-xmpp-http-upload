@@ -1,4 +1,4 @@
-# django-xmpp-http-account
+# django-xmpp-http-upload
 
 This is a [Django](https://www.djangoproject.com) app providing functionality for [XEP-0363: HTTP
 File Upload](http://www.xmpp.org/extensions/xep-0363.html), an experimental XEP. The idea is that
@@ -120,6 +120,9 @@ e.g. a file called `localsettings.py`).
 * `XMPP_HTTP_UPLOAD_URL_BASE`:
   The domain used to create upload/download URLs when a new slot is requested by the XMPP server.
   By default, the domain used to access the slot API is used.
+* `XMPP_HTTP_UPLOAD_URL_HTTPS`:
+  Ensure returned GET and PUT urls to be https. May be needed if protocol is
+  not correctly recognized automatically.
 * `XMPP_HTTP_UPLOAD_ROOT`:
   The base directory uploaded files will be put into. This will be a subdirectory of the directory
   configured in the `MEDIA_ROOT` setting. The default is `http_upload`.

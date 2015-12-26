@@ -28,6 +28,7 @@ from .querysets import UploadQuerySet
 
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
 _ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
+_force_https = getattr(settings, 'XMPP_HTTP_UPLOAD_URL_HTTPS', False)
 _upload_url = getattr(settings, 'XMPP_HTTP_UPLOAD_URL_BASE', None)
 
 
@@ -76,5 +77,9 @@ class Upload(models.Model):
 
         else:
             get_url = put_url
+
+        if _force_https is True:
+            put_url = put_url.replace('http://', 'https://')
+            get_url = get_url.replace('http://', 'https://')
 
         return put_url, get_url
