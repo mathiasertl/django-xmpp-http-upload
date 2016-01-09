@@ -24,6 +24,7 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
 from django.http import FileResponse
+from django.http import UnreadablePostError
 from django.utils import six
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -178,7 +179,12 @@ class UploadView(APIView):
                 'Content type (%s) does not match requested type.' % request.META['CONTENT_TYPE'],
                 status=400)
 
-        file_obj = request.data['file']
+        try:
+            file_obj = request.data['file']
+        except UnreadablePostError:
+            # This seems to happen if the client never actually posts any data.
+            return HttpResponse('Could not read post request.', status=400)
+
         upload.file = file_obj
         upload.type = content_type
         upload.save()
