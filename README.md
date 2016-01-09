@@ -210,13 +210,16 @@ python manage.py test xmpp_http_upload
 
 ## ChangeLog
 
-### 0.4 (2015-09-XX)
+### 0.4 (2016-01-09)
 
 * Add the option `XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH` to add the `Content-Length` header in
   responses. This leads to the response not being chunked, Erlang seems to choke on chunked
   responses.
+* New option `XMPP_HTTP_UPLOAD_URL_HTTPS` to force HTTPS URLs (thanks to Filip Pytloun).
 * Fix constructing of media URLs (when `XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD` is `True`) with
   non-ascii characters.
+* Catch UnreadablePostError on upload, usually occurs when the client opens a connection and never
+  starts sending data. We now return HTTP 400 in this case.
 
 ### 0.3 (2015-09-15)
 
