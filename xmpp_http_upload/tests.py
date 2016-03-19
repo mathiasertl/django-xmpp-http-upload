@@ -105,21 +105,17 @@ class RequestSlotTestCase(TestCase):
 
 
 class UploadTest(TestCase):
-    def test_basic(self):
-        # The file we will upload
-        file_name = 'example.txt'
-        file_content = 'this is a test'
-
+    def assertUpload(self, filename, content):
         # First request a slot
         self.assertEquals(Upload.objects.count(), 0)
-        response = slot(jid=user_jid, name=file_name, size=len(file_content))
+        response = slot(jid=user_jid, name=filename, size=len(content))
         self.assertEquals(response.status_code, 200)
         self.assertEquals(Upload.objects.count(), 1)
         put_url, get_url = response.content.decode('utf-8').split()
 
         # Upload the file
         put_path = urlsplit(put_url).path
-        response = put(put_path, file_content)
+        response = put(put_path, content)
         self.assertEquals(response.status_code, 201)
 
         # Get the object, verify that the same URLs are generated
@@ -128,10 +124,16 @@ class UploadTest(TestCase):
             self.assertEqual((put_url, get_url), upload.get_urls(response.wsgi_request))
 
             # open the file, verify contents
-            self.assertEqual(file_content, upload.file.read())
+            self.assertEqual(content, upload.file.read())
 
             # try to download it
             self.assertEqual(upload.file.url, urlsplit(get_url).path)
         finally:
             # remove file
             upload.file.delete(save=True)
+
+    def test_basic(self):
+        self.assertUpload('example.txt', 'this is a test')
+
+    def test_space(self):
+        self.assertUpload('example new.txt', 'this is a test')
