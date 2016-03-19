@@ -28,6 +28,7 @@ from django.http import UnreadablePostError
 from django.utils import six
 from django.utils import timezone
 from django.utils.crypto import get_random_string
+from django.utils.text import get_valid_filename
 from django.views.generic.base import View
 
 from rest_framework.parsers import FileUploadParser
@@ -54,7 +55,7 @@ class RequestSlotView(View):
     def get(self, request, *args, **kwargs):
         try:
             jid = request.GET['jid']  # jid of the uploader
-            name = request.GET['name']  # filename
+            name = get_valid_filename(request.GET['name'])  # filename
             size = int(request.GET['size'])  # filesize
 
             # type is optional:
@@ -172,7 +173,8 @@ class UploadView(APIView):
 
         if int(request.META['CONTENT_LENGTH']) != upload.size:
             return HttpResponse(
-                "File size (%s) does not match requested size." % request.META['CONTENT_LENGTH'],
+                "File size (%s) does not match requested size (%s)." % (
+                    request.META['CONTENT_LENGTH'], upload.size),
                 status=400)
         if upload.type is not None and content_type != upload.type:
             return HttpResponse(
