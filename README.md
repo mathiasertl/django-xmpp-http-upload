@@ -195,7 +195,7 @@ initiating the upload. It accepts the following GET parameters:
 
 ### Testing
 
-There is a testcase for the app, run it with:
+There are testcases for the app, run it with:
 
 ```
 cd demo
