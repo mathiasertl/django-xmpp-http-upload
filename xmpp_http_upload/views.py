@@ -182,7 +182,7 @@ class UploadView(APIView):
                 status=400)
 
         try:
-            file_obj = request.data['file']
+            file_obj = request.FILES['file']
         except UnreadablePostError:
             # This seems to happen if the client never actually posts any data.
             return HttpResponse('Could not read post request.', status=400)
