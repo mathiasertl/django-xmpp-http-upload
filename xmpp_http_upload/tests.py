@@ -137,3 +137,6 @@ class UploadTest(TestCase):
 
     def test_space(self):
         self.assertUpload('example new.txt', 'this is a test')
+
+    def test_umlaut(self):
+        self.assertUpload('exämple.txt', 'this is a test')
