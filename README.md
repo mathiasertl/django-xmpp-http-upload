@@ -210,6 +210,10 @@ python manage.py test xmpp_http_upload
 
 ## ChangeLog
 
+### 0.4.1 (not yet released)
+
+* Update djangorestframework dependency to the current 3.3.3.
+
 ### 0.4 (2016-01-09)
 
 * Add the option `XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH` to add the `Content-Length` header in
