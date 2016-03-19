@@ -21,6 +21,7 @@ from datetime import timedelta
 from django.core.urlresolvers import reverse
 from django.test import Client
 from django.test import TestCase
+from django.utils import six
 from django.utils import timezone
 from django.utils.six.moves.urllib.parse import urlsplit
 
@@ -124,7 +125,7 @@ class UploadTest(TestCase):
             self.assertEqual((put_url, get_url), upload.get_urls(response.wsgi_request))
 
             # open the file, verify contents
-            self.assertEqual(content, upload.file.read())
+            self.assertEqual(six.b(content), upload.file.read())
 
             # try to download it
             self.assertEqual(upload.file.url, urlsplit(get_url).path)
