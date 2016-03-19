@@ -58,7 +58,7 @@ class RequestSlotTestCase(TestCase):
 
     def test_max_file_size(self):
         response = slot(jid=user_jid, name='example.jpg', size=1024 * 1024)
-        self.assertEquals(response.status_code, 403)
+        self.assertEquals(response.status_code, 413)
         self.assertEquals(Upload.objects.count(), 0)
 
         response = slot(jid=user_jid, name='example.jpg', size=300 * 1024)
