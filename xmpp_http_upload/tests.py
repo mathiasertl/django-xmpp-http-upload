@@ -140,3 +140,6 @@ class UploadTest(TestCase):
 
     def test_umlaut(self):
         self.assertUpload('exämple.txt', 'this is a test')
+
+    def test_unicode(self):
+        self.assertUpload('صباح الخير يا صاحب.txt', 'testcontent')
