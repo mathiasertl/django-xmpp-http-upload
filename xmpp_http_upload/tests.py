@@ -124,15 +124,14 @@ class UploadTest(TestCase):
 
         # Get the object, verify that the same URLs are generated
         upload = Upload.objects.all()[0]  # we verified there is exactly one above
-        self.assertEqual((put_url, get_url), upload.get_urls(response.wsgi_request))
+        try:
+            self.assertEqual((put_url, get_url), upload.get_urls(response.wsgi_request))
 
-        # try to download it
-        self.assertEqual(upload.file.url, urlsplit(get_url).path)
-        response = get(upload.file.url)
-        self.assertEquals(response.status_code, 200)
-        data = list(response.streaming_content)
-        self.assertEquals(len(data), 1)
-        self.assertEquals(data[0].decode('utf-8'), file_content)
+            # open the file, verify contents
+            self.assertEqual(file_content, upload.file.read())
 
-        # remove file
-        upload.file.delete(save=True)
+            # try to download it
+            self.assertEqual(upload.file.url, urlsplit(get_url).path)
+        finally:
+            # remove file
+            upload.file.delete(save=True)
