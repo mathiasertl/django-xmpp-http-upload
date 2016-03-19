@@ -19,7 +19,7 @@ from __future__ import unicode_literals
 from setuptools import find_packages
 from setuptools import setup
 
-version = '0.4'
+version = '0.4.1'
 requires = [
     'Django>=1.8.4',
     'djangorestframework>=3.3.3',
