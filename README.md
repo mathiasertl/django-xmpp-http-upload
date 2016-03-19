@@ -204,15 +204,15 @@ python manage.py test xmpp_http_upload
 
 ## TODO
 
-* Exclude API from CSRF protection to reduce overhead.
-* Write unit tests
 * Write cleanup celery task
 
 ## ChangeLog
 
 ### 0.4.1 (not yet released)
 
+* Fix uploading filenames with spaces (spaces are now replaced with an underscore).
 * Update djangorestframework dependency to the current 3.3.3.
+* Fix some broken test cases, test uploads more thoroughly.
 
 ### 0.4 (2016-01-09)
 
