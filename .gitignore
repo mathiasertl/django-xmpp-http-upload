@@ -11,3 +11,4 @@
 /dist/
 /*.egg-info/
 /py3/
+/build/

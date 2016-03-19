@@ -213,6 +213,7 @@ python manage.py test xmpp_http_upload
 * Fix uploading filenames with spaces (spaces are now replaced with an underscore).
 * Update djangorestframework dependency to the current 3.3.3.
 * Fix some broken test cases, test uploads more thoroughly.
+* Also upload a [Python Wheel](http://pythonwheels.com/).
 
 ### 0.4 (2016-01-09)
 
