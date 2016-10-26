@@ -47,7 +47,7 @@ class Upload(models.Model):
     jid = models.CharField(max_length=256)
     name = models.CharField(max_length=256)
     size = models.PositiveIntegerField()
-    type = models.CharField(max_length=64, null=True, blank=True)
+    type = models.CharField(max_length=128, null=True, blank=True)
     hash = models.CharField(max_length=64)
 
     # Populated when the file is uploaded

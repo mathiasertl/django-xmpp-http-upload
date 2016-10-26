@@ -208,6 +208,10 @@ python manage.py test xmpp_http_upload
 
 ## ChangeLog
 
+### 0.4.2 (2016-10-26)
+
+* Increase length of `type` column to 128 characters (we sometimes encounter up to 80 characters).
+
 ### 0.4.1 (2016-03-19)
 
 * Fix uploading filenames with spaces (spaces are now replaced with an underscore).
