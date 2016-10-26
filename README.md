@@ -208,7 +208,7 @@ python manage.py test xmpp_http_upload
 
 ## ChangeLog
 
-### 0.4.2 (2016-10-26)
+### 0.4.2 (TBR)
 
 * Increase length of `type` column to 128 characters (we sometimes encounter up to 80 characters).
 
