@@ -21,9 +21,9 @@ import re
 
 from django.conf import settings
 from django.db.models import Sum
+from django.http import FileResponse
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
-from django.http import FileResponse
 from django.http import UnreadablePostError
 from django.utils import six
 from django.utils import timezone

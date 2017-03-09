@@ -20,7 +20,6 @@ from django.conf.urls import url
 
 from . import views
 
-
 urlpatterns = [
     url(r'^slot/$', views.RequestSlotView.as_view(), name='slot'),
     # TODO: The filename regex should exclude unsafe characters
