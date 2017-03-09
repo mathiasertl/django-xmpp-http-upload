@@ -210,7 +210,8 @@ python manage.py test xmpp_http_upload
 
 ### 0.4.2 (TBR)
 
-* Increase length of `type` column to 128 characters (we sometimes encounter up to 80 characters).
+* Increase length of `type` column to 255 characters (we sometimes encounter up to 80 characters).
+* Use isort to sort imports, increase textwidth to 110 chars.
 
 ### 0.4.1 (2016-03-19)
 
