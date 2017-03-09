@@ -21,8 +21,8 @@ from setuptools import setup
 
 version = '0.4.1'
 requires = [
-    'Django>=1.8.4',
-    'djangorestframework>=3.3.3',
+    'Django>=1.8',
+    'djangorestframework>=3.5',
 ]
 
 setup(
@@ -48,6 +48,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Communications :: File Sharing",
     ],
