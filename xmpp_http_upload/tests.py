@@ -16,6 +16,7 @@
 
 from __future__ import unicode_literals
 
+import json
 from datetime import timedelta
 
 from django.core.urlresolvers import reverse
@@ -218,7 +219,9 @@ class MaxSizeViewTest(TestCase):
     def test_json(self):
         response = self.req({'jid': 'user@example.com', 'output': 'application/json'})
         self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.json(), {'max_size': 100})
+
+        # TODO: Use response.json() when Django 1.8 is no longer supported.
+        self.assertEquals(json.loads(response.content.decode('utf-8')), {'max_size': 100})
 
     def test_unknown_content_type(self):
         response = self.req({'jid': 'user@example.com', 'output': 'application/foobar'})
