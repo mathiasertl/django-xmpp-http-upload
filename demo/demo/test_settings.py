@@ -110,9 +110,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 XMPP_HTTP_UPLOAD_ACCESS = (
-    ('^admin@example\.com$', {
-        'http_upload': {},  # empty dict -> no restrictions
-    }),
+    ('^admin@example\.com$', {}),  # empty dict -> no restrictions
     ('^blocked@jabber.at$', False),  # this user isn't allowed to upload files
     # jabber.at and jabber.zone users have some restrictions:
     (['@example\.net$', '@example\.org$'], {
