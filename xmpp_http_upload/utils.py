@@ -21,8 +21,6 @@ import re
 from django.conf import settings
 from django.utils import six
 
-_acls = getattr(settings, 'XMPP_HTTP_UPLOAD_ACCESS', (('.*', False), ))
-
 
 def get_config(jid):
     """Get the configuration for the given JID based on XMPP_HTTP_UPLOAD_ACCESS.
@@ -30,7 +28,9 @@ def get_config(jid):
     If the JID does not match any rule, ``False`` is returned.
     """
 
-    for regex, config in _acls:
+    acls = getattr(settings, 'XMPP_HTTP_UPLOAD_ACCESS', (('.*', False), ))
+
+    for regex, config in acls:
         if isinstance(regex, six.string_types):
             regex = [regex]
 
