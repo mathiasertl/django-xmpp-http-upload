@@ -45,7 +45,7 @@ class BaseCommand(Command):
         work_dir = os.path.join(_rootdir, 'demo')
         os.chdir(work_dir)
         sys.path.insert(0, work_dir)
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "demo.settings")
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "demo.test_settings")
 
         import django
         django.setup()
