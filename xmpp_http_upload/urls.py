@@ -20,6 +20,7 @@ from django.conf.urls import url
 
 from . import views
 
+app_name = 'xmpp_http_upload'
 urlpatterns = [
     url(r'^slot/$', views.RequestSlotView.as_view(), name='slot'),
     url(r'^max_size/$', views.MaxSizeView.as_view(), name='max_size'),
