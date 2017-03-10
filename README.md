@@ -213,7 +213,7 @@ python manage.py test xmpp_http_upload
 
 ## ChangeLog
 
-### 0.4.2 (TBR)
+### 0.5.0 (2017-03-10)
 
 * Increase length of `type` column to 255 characters (we sometimes encounter up to 80 characters).
 * If a user does not match any ACL from the `XMPP_HTTP_UPLOAD_ACCESS` setting, all uploads are denied.
