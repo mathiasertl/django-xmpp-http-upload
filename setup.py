@@ -23,7 +23,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 _rootdir = os.path.dirname(os.path.realpath(__file__))
-version = '0.4.1'
+version = '0.5.0'
 requires = [
     'Django>=1.8',
     'djangorestframework>=3.5',
