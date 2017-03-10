@@ -159,6 +159,11 @@ HOME=/home/django/your-app
 0 1     * * *           root            python manage.py cleanup_http_uploads
 ```
 
+### celery task
+
+Alternatively, if you use [Celery](http://www.celeryproject.org/), you can also use the 
+``xmpp_http_upload.cleanup_http_uploads`` task to cleanup your files.
+
 ## Development
 
 If you want to use this app to develop e.g. a plugin for an XMPP server, you can simply do the
