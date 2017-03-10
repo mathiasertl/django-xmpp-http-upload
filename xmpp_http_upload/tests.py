@@ -21,6 +21,7 @@ from datetime import timedelta
 from django.core.urlresolvers import reverse
 from django.test import Client
 from django.test import TestCase
+from django.test import override_settings
 from django.utils import six
 from django.utils import timezone
 from django.utils.six.moves.urllib.parse import urlsplit
@@ -168,6 +169,20 @@ class RequestSlotTestCase(TestCase):
         response = slot(jid='admin@example.com', name='example.jpg', size=-3)
         self.assertEquals(response.status_code, 400)
         self.assertEquals(Upload.objects.count(), 0)
+
+    @override_settings(XMPP_HTTP_UPLOAD_ACCESS=[
+        ('^admin@example\.com$', {}),
+    ])
+    def test_no_matching_acl(self):
+        # This works:
+        response = slot(jid='admin@example.com', name='example.jpg', size=10)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(Upload.objects.count(), 1)
+
+        # But this doesn't match any ACL, so we get forbidden
+        response = slot(jid='admin@example.net', name='example.jpg', size=10)
+        self.assertEquals(response.status_code, 403)
+        self.assertEquals(Upload.objects.count(), 1)
 
 
 class UploadTest(TestCase):
