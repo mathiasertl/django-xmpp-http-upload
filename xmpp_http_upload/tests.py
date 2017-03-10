@@ -52,6 +52,25 @@ class RequestSlotTestCase(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertEquals(Upload.objects.count(), 1)
 
+        upload = Upload.objects.first()
+        self.assertEqual(upload.jid, 'admin@example.com')
+        self.assertEqual(upload.name, 'example.jpg')
+        self.assertEqual(upload.size, 10)
+        self.assertIsNone(upload.type)
+        self.assertIsNotNone(upload.hash)
+
+    def test_normalized_filename(self):
+        response = slot(jid='admin@example.com', name='ex/ample.jpg', size=10)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(Upload.objects.count(), 1)
+
+        upload = Upload.objects.first()
+        self.assertEqual(upload.jid, 'admin@example.com')
+        self.assertEqual(upload.name, 'example.jpg')
+        self.assertEqual(upload.size, 10)
+        self.assertIsNone(upload.type)
+        self.assertIsNotNone(upload.hash)
+
     def test_blocked(self):
         response = slot(jid='blocked@jabber.at', name='example.jpg', size=10)
         self.assertEquals(response.status_code, 403)
@@ -62,9 +81,17 @@ class RequestSlotTestCase(TestCase):
         self.assertEquals(response.status_code, 413)
         self.assertEquals(Upload.objects.count(), 0)
 
-        response = slot(jid=user_jid, name='example.jpg', size=300 * 1024)
+        size = 300 * 1024
+        response = slot(jid=user_jid, name='example.jpg', size=size)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(Upload.objects.count(), 1)
+
+        upload = Upload.objects.first()
+        self.assertEqual(upload.jid, user_jid)
+        self.assertEqual(upload.name, 'example.jpg')
+        self.assertEqual(upload.size, size)
+        self.assertIsNone(upload.type)
+        self.assertIsNotNone(upload.hash)
 
     def test_max_total_size(self):
         # first, create some uploads manually so we're almost at the limit
@@ -103,6 +130,44 @@ class RequestSlotTestCase(TestCase):
         response = slot(jid=user_jid, name='example%s.jpg' % (i + 1), size=10 * 1024)
         self.assertEquals(response.status_code, 402)
         self.assertEquals(Upload.objects.count(), i)
+
+    def test_mime_type(self):
+        response = slot(jid='admin@example.com', name='example.jpg', size=10, type='foo/bar')
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(Upload.objects.count(), 1)
+
+        upload = Upload.objects.first()
+        self.assertEqual(upload.jid, 'admin@example.com')
+        self.assertEqual(upload.name, 'example.jpg')
+        self.assertEqual(upload.size, 10)
+        self.assertEqual(upload.type, 'foo/bar')
+        self.assertIsNotNone(upload.hash)
+
+    def test_bad_requests(self):
+        # jid missing
+        response = slot(name='example.jpg', size=10)
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(Upload.objects.count(), 0)
+
+        # name missing
+        response = slot(jid='admin@example.com', size=10)
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(Upload.objects.count(), 0)
+
+        # size missing
+        response = slot(jid='admin@example.com', name='example.jpg')
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(Upload.objects.count(), 0)
+
+        # malformed size
+        response = slot(jid='admin@example.com', name='example.jpg', size='foo')
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(Upload.objects.count(), 0)
+
+        # negative size
+        response = slot(jid='admin@example.com', name='example.jpg', size=-3)
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(Upload.objects.count(), 0)
 
 
 class UploadTest(TestCase):
