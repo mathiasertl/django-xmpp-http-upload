@@ -211,12 +211,13 @@ python manage.py test xmpp_http_upload
 ### 0.4.2 (TBR)
 
 * Increase length of `type` column to 255 characters (we sometimes encounter up to 80 characters).
-* Add some more tests to the test suite.
+* If a user does not match any ACL from the `XMPP_HTTP_UPLOAD_ACCESS` setting, all uploads are denied.
+* Add many more tests to the test suite.
 * Use isort to sort imports, increase textwidth to 110 chars.
 * Add new setup.py commands to run the test-suite or code quality tests. 
 * Add new setup.py command to generate a coverage report for the test suite.
-* Use [Travis CI](https://travis-ci.org/) to run the test-suite and code quality tests in all
-  supported Python and Django Versions.
+* Use [Travis CI](https://travis-ci.org/) to run the test-suite and code quality tests in all supported Python
+  and Django Versions.
 
 ### 0.4.1 (2016-03-19)
 
