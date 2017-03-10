@@ -171,13 +171,16 @@ class RequestSlotTestCase(TestCase):
 
 
 class UploadTest(TestCase):
+    def request_slot(self, filename, size, **kwargs):
+        response = slot(jid=user_jid, name=filename, size=size, **kwargs)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(Upload.objects.count(), 1)
+        return response.content.decode('utf-8').split()
+
     def assertUpload(self, filename, content):
         # First request a slot
         self.assertEquals(Upload.objects.count(), 0)
-        response = slot(jid=user_jid, name=filename, size=len(content))
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(Upload.objects.count(), 1)
-        put_url, get_url = response.content.decode('utf-8').split()
+        put_url, get_url = self.request_slot(filename, size=len(content))
 
         # Upload the file
         put_path = urlsplit(put_url).path
@@ -209,3 +212,34 @@ class UploadTest(TestCase):
 
     def test_unicode(self):
         self.assertUpload('صباح الخير يا صاحب.txt', 'testcontent')
+
+    def test_non_existing(self):
+        filename = 'example.jpg'
+        content = 'foobar'
+        put_url, get_url = self.request_slot(filename, size=len(content), type='text/plain')
+        upload = Upload.objects.first()
+        self.assertEqual(upload.file.name, '')
+        self.assertEqual(upload.type, 'text/plain')
+
+        false_put_url = reverse('xmpp-http-upload:share', kwargs={'hash': 'f' * 32, 'filename': filename})
+        put_path = urlsplit(false_put_url).path
+        response = put(put_path, content)
+        self.assertEquals(response.status_code, 403)
+        upload = Upload.objects.get(pk=upload.pk)
+        self.assertEqual(upload.file.name, '')
+        self.assertEqual(response.content, '')
+
+        put_path = urlsplit(put_url).path
+        response = put(put_path, content + 'foobar')
+        self.assertEquals(response.status_code, 400)
+        upload = Upload.objects.get(pk=upload.pk)
+        self.assertEqual(upload.file.name, '')
+        self.assertEqual(response.content, 'File size (12) does not match requested size (6).')
+
+        put_path = urlsplit(put_url).path
+        response = put(put_path, content)
+        self.assertEquals(response.status_code, 400)
+        upload = Upload.objects.get(pk=upload.pk)
+        self.assertEqual(upload.file.name, '')
+        self.assertEqual(response.content,
+                         'Content type (application/octet-stream) does not match requested type.')
