@@ -39,7 +39,6 @@ from .models import Upload
 from .utils import get_config
 
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
-_acls = getattr(settings, 'XMPP_HTTP_UPLOAD_ACCESS', (('.*', False), ))
 _ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
 _add_content_length = getattr(settings, 'XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH', False)
 
