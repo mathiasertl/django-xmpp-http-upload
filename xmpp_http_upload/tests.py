@@ -185,6 +185,47 @@ class RequestSlotTestCase(TestCase):
         self.assertEquals(Upload.objects.count(), 1)
 
 
+@override_settings(XMPP_HTTP_UPLOAD_ACCESS=[
+    ('^admin@example\.com$', {}),
+    ('^user@example\.com$', {'max_file_size': 100, }),
+])
+class MaxSizeViewTest(TestCase):
+    def req(self, *args, **kwargs):
+        url = reverse('xmpp-http-upload:max_size')
+        c = Client()
+        return c.get(url, *args, **kwargs)
+
+    def test_unrestricted(self):
+        response = self.req({'jid': 'admin@example.com'})
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.content, b'0')
+
+    def test_restricted(self):
+        response = self.req({'jid': 'user@example.com'})
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.content, b'100')
+
+    def test_non_matching(self):
+        response = self.req({'jid': 'foo@example.com'})
+        self.assertEquals(response.status_code, 403)
+        self.assertEquals(response.content, b'You are not allowed to upload files.')
+
+    def test_no_jid(self):
+        response = self.req()
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.content, b'"jid" is a required GET parameter.')
+
+    def test_json(self):
+        response = self.req({'jid': 'user@example.com', 'output': 'application/json'})
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.json(), {'max_size': 100})
+
+    def test_unknown_content_type(self):
+        response = self.req({'jid': 'user@example.com', 'output': 'application/foobar'})
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.content, 'Unsupported content type in output.')
+
+
 class UploadTest(TestCase):
     def request_slot(self, filename, size, **kwargs):
         response = slot(jid=user_jid, name=filename, size=size, **kwargs)
