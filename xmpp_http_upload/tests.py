@@ -242,14 +242,14 @@ class UploadTest(TestCase):
         self.assertEquals(response.status_code, 403)
         upload = Upload.objects.get(pk=upload.pk)
         self.assertEqual(upload.file.name, '')
-        self.assertEqual(response.content, '')
+        self.assertEqual(response.content, b'')
 
         put_path = urlsplit(put_url).path
         response = put(put_path, content + 'foobar')
         self.assertEquals(response.status_code, 400)
         upload = Upload.objects.get(pk=upload.pk)
         self.assertEqual(upload.file.name, '')
-        self.assertEqual(response.content, 'File size (12) does not match requested size (6).')
+        self.assertEqual(response.content, b'File size (12) does not match requested size (6).')
 
         put_path = urlsplit(put_url).path
         response = put(put_path, content)
@@ -257,4 +257,4 @@ class UploadTest(TestCase):
         upload = Upload.objects.get(pk=upload.pk)
         self.assertEqual(upload.file.name, '')
         self.assertEqual(response.content,
-                         'Content type (application/octet-stream) does not match requested type.')
+                         b'Content type (application/octet-stream) does not match requested type.')
