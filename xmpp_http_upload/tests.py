@@ -223,7 +223,7 @@ class MaxSizeViewTest(TestCase):
     def test_unknown_content_type(self):
         response = self.req({'jid': 'user@example.com', 'output': 'application/foobar'})
         self.assertEquals(response.status_code, 400)
-        self.assertEquals(response.content, 'Unsupported content type in output.')
+        self.assertEquals(response.content, b'Unsupported content type in output.')
 
 
 class UploadTest(TestCase):
