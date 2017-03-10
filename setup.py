@@ -68,6 +68,32 @@ class TestCommand(BaseCommand):
         self.run_tests()
 
 
+class CoverageCommand(BaseCommand):
+    description = 'Generate test-coverage for django-ca.'
+
+    def run(self):
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "demo.test_settings")
+
+        work_dir = os.path.join(_rootdir, 'demo')
+        report_dir = os.path.join(_rootdir, 'build', 'coverage')
+        os.chdir(work_dir)
+
+        import coverage
+
+        cov = coverage.Coverage(cover_pylib=False, branch=True,
+                                source=['xmpp_http_upload'],
+                                omit=['*migrations/*', '*/tests/tests*', ]
+                                )
+        cov.start()
+
+        self.run_tests()
+
+        cov.stop()
+        cov.save()
+
+        cov.html_report(directory=report_dir)
+
+
 class QualityCommand(Command):
     user_options = []
 
@@ -117,7 +143,7 @@ setup(
     license="GNU General Public License (GPL) v3",
     packages=find_packages(),
     cmdclass={
-        # 'coverage': CoverageCommand,
+        'coverage': CoverageCommand,
         'test': TestCommand,
         'code_quality': QualityCommand,
     },
