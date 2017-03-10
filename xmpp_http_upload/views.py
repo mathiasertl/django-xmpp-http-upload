@@ -141,6 +141,34 @@ class RequestSlotView(View):
         return response
 
 
+class MaxSizeView(View):
+    def get(self, request):
+        try:
+            jid = request.GET['jid']  # jid of the uploader
+        except (KeyError):
+            return HttpResponse('"jid" is a required GET parameter.', status=400)
+
+        config = get_config(jid)
+        if config is False:
+            return HttpResponseForbidden("You are not allowed to upload files.")
+
+        size = int(config.get('max_file_size', 0))
+
+        # get output type
+        output = request.GET.get('output', 'text/plain')
+        if output == 'text/plain':
+            content = str(size)
+        elif output == 'application/json':
+            content = json.dumps({'max_size': size})
+        else:
+            return HttpResponse("Unsupported content type in output.", status=400)
+
+        response = HttpResponse(content, content_type=output)
+        if _add_content_length is True:
+            response['Content-Length'] = len(content)
+        return response
+
+
 class UploadView(APIView):
     parser_classes = (FileUploadParser, )
 
