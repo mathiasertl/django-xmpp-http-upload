@@ -217,6 +217,7 @@ python manage.py test xmpp_http_upload
 
 * Increase length of `type` column to 255 characters (we sometimes encounter up to 80 characters).
 * If a user does not match any ACL from the `XMPP_HTTP_UPLOAD_ACCESS` setting, all uploads are denied.
+* Set the default app name to ``xmpp_http_upload``.
 * Add many more tests to the test suite.
 * Use isort to sort imports, increase textwidth to 110 chars.
 * Add new setup.py commands to run the test-suite or code quality tests. 
