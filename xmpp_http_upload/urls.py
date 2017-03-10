@@ -22,6 +22,8 @@ from . import views
 
 urlpatterns = [
     url(r'^slot/$', views.RequestSlotView.as_view(), name='slot'),
+    url(r'^max_size/$', views.MaxSizeView.as_view(), name='max_size'),
+
     # TODO: The filename regex should exclude unsafe characters
     url(r'^share/(?P<hash>[a-zA-Z0-9]{32})/(?P<filename>.*)$', views.UploadView.as_view(),
         name='share'),
