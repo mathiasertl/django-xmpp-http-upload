@@ -36,6 +36,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Upload
+from .utils import get_config
 
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
 _acls = getattr(settings, 'XMPP_HTTP_UPLOAD_ACCESS', (('.*', False), ))
@@ -72,59 +73,46 @@ class RequestSlotView(View):
         jid = control_char_re.sub('', jid)
         name = control_char_re.sub('', name)
 
-        for regex, config in _acls:
-            if isinstance(regex, six.string_types):
-                if re.search(regex, jid) is None:
-                    continue  # ACL doesn't match
-            else:  # received an iterable of regex's
-                matches = False
-                for subex in regex:
-                    if re.search(subex, jid):
-                        matches = True
-                        break
-                if matches is False:
-                    continue
+        # shortcuts
+        now = timezone.now()
+        qs = Upload.objects.filter(jid=jid)
 
-            # If the config is set to False, everything should be denied.
-            if config is False:
-                return HttpResponseForbidden("You are not allowed to upload files.")
+        config = get_config(jid)
 
-            # shortcuts
-            now = timezone.now()
-            qs = Upload.objects.filter(jid=jid)
+        # If the config is set to False, everything should be denied.
+        if config is False:
+            return HttpResponseForbidden("You are not allowed to upload files.")
 
-            # deny if file is to large
-            if 'max_file_size' in config and size > config['max_file_size']:
-                message = 'Files may not be larger than %s bytes.' % config['max_file_size']
-                return HttpResponse(message, status=413)
+        # deny if file is to large
+        if 'max_file_size' in config and size > config['max_file_size']:
+            message = 'Files may not be larger than %s bytes.' % config['max_file_size']
+            return HttpResponse(message, status=413)
 
-            # deny if total size of uploaded files is too large
-            if 'max_total_size' in config:
-                message = 'User may not upload more than %s bytes.' % config['max_total_size']
+        # deny if total size of uploaded files is too large
+        if 'max_total_size' in config:
+            message = 'User may not upload more than %s bytes.' % config['max_total_size']
 
-                uploaded = qs.aggregate(total=Sum('size'))
-                if uploaded['total'] is None:  # no uploads by this user yet
-                    uploaded['total'] = 0
-                if uploaded['total'] + size > config['max_total_size']:
-                    return HttpResponseForbidden(message)
+            uploaded = qs.aggregate(total=Sum('size'))
+            if uploaded['total'] is None:  # no uploads by this user yet
+                uploaded['total'] = 0
+            if uploaded['total'] + size > config['max_total_size']:
+                return HttpResponseForbidden(message)
 
-            if 'bytes_per_timedelta' in config:
-                delta = config['bytes_per_timedelta']['delta']
-                quota = config['bytes_per_timedelta']['bytes']
-                uploaded = qs.filter(created__gt=now - delta).aggregate(total=Sum('size'))
-                if uploaded['total'] is None:  # no uploads by this user yet
-                    uploaded['total'] = 0
+        if 'bytes_per_timedelta' in config:
+            delta = config['bytes_per_timedelta']['delta']
+            quota = config['bytes_per_timedelta']['bytes']
+            uploaded = qs.filter(created__gt=now - delta).aggregate(total=Sum('size'))
+            if uploaded['total'] is None:  # no uploads by this user yet
+                uploaded['total'] = 0
 
-                if uploaded['total'] + size > quota:
-                    return HttpResponse("User is temporarily out of quota.", status=402)
+            if uploaded['total'] + size > quota:
+                return HttpResponse("User is temporarily out of quota.", status=402)
 
-            if 'uploads_per_timedelta' in config:
-                delta = config['uploads_per_timedelta']['delta']
-                quota = config['uploads_per_timedelta']['uploads']
-                if qs.filter(created__gt=now - delta).count() + 1 > quota:
-                    return HttpResponse("User is temporarily out of quota.", status=402)
-
-            break  # regex matched, not checking any others
+        if 'uploads_per_timedelta' in config:
+            delta = config['uploads_per_timedelta']['delta']
+            quota = config['uploads_per_timedelta']['uploads']
+            if qs.filter(created__gt=now - delta).count() + 1 > quota:
+                return HttpResponse("User is temporarily out of quota.", status=402)
 
         hash = get_random_string(32)
         upload = Upload(jid=jid, name=name, size=size, type=content_type, hash=hash)
