@@ -186,7 +186,7 @@ class UploadView(APIView):
             return HttpResponseForbidden()
         content_type = request.META.get('CONTENT_TYPE', 'application/octet-stream')
 
-        if int(request.META['CONTENT_LENGTH']) != upload.size:
+        if int(request.META.get('CONTENT_LENGTH', -1)) != upload.size:
             return HttpResponse(
                 "File size (%s) does not match requested size (%s)." % (
                     request.META['CONTENT_LENGTH'], upload.size),

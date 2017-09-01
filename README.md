@@ -213,6 +213,10 @@ python manage.py test xmpp_http_upload
 
 ## ChangeLog
 
+### 0.5.1 (TBR)
+
+* Handle requests that do not provide a ContentLength header (a rare corner case).
+
 ### 0.5.0 (2017-03-10)
 
 * Increase length of `type` column to 255 characters (we sometimes encounter up to 80 characters).
