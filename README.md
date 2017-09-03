@@ -87,8 +87,7 @@ e.g. a file called `localsettings.py`).
 
   ```python
   XMPP_HTTP_UPLOAD_ACCESS = (
-      ('^admin@jabber\.at$', {
-          'http_upload': {},  # empty dict -> no restrictions
+      ('^admin@jabber\.at$', {}),  # empty dict -> no restrictions
       }),
       ('^blocked@jabber.at$', False),  # this user isn't allowed to upload files
       # jabber.at and jabber.zone users have some restrictions:
