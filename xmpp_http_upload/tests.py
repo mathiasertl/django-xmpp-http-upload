@@ -22,16 +22,12 @@ from datetime import timedelta
 from django.test import Client
 from django.test import TestCase
 from django.test import override_settings
+from django.urls import reverse
 from django.utils import six
 from django.utils import timezone
 from django.utils.six.moves.urllib.parse import urlsplit
 
 from .models import Upload
-
-try:
-    from django.urls import reverse
-except ImportError:  # pragma: only django<=1.8
-    from django.core.urlresolvers import reverse
 
 user_jid = 'example@example.net'
 
