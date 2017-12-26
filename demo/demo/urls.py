@@ -21,8 +21,9 @@ from django.conf.urls.static import static
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^http_upload/', include('xmpp_http_upload.urls', namespace='xmpp-http-upload')),
+    url(r'^admin/', admin.site.urls),
+    # TODO: the second argument to include() is only required in Django 1.8
+    url(r'^http_upload/', include('xmpp_http_upload.urls', 'xmpp-http-upload')),
 ]
 
 
