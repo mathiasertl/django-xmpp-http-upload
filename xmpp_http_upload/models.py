@@ -23,12 +23,12 @@ from django.db import models
 from django.utils.six.moves.urllib.parse import quote
 from django.utils.six.moves.urllib.parse import urlsplit
 
+from .querysets import UploadQuerySet
+
 try:
     from django.urls import reverse
 except ImportError:  # pragma: only django<=1.8
     from django.core.urlresolvers import reverse
-
-from .querysets import UploadQuerySet
 
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
 _ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
