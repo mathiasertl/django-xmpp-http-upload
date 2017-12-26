@@ -128,7 +128,7 @@ class QualityCommand(Command):
         django.setup()
 
         from django.core.management import call_command
-        print('python ca/manage.py check')
+        print('python demo/manage.py check')
         call_command('check')
 
 
