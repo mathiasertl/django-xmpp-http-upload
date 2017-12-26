@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of django-xmpp-http-upload
-# (https://github.com/mathiasertl/django-xmpp-http-upload).
+# This file is part of django-xmpp-http-upload (https://github.com/mathiasertl/django-xmpp-http-upload).
 #
-# django-xmpp-http-upload is free software: you can redistribute it and/or modify it under the
-# terms of the GNU General Public License as published by the Free Software Foundation, either
-# version 3 of the License, or (at your option) any later version.
+# django-xmpp-http-upload is free software: you can redistribute it and/or modify it under the terms of the
+# GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-# django-xmpp-http-upload is distributed in the hope that it will be useful, but WITHOUT ANY
-# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-# PURPOSE.  See the GNU General Public License for more details.
+# django-xmpp-http-upload is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+# License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# django-xmpp-http-upload.  If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License along with django-xmpp-http-upload. If
+# not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
@@ -189,9 +188,8 @@ class UploadView(APIView):
         content_type = request.META.get('CONTENT_TYPE', 'application/octet-stream')
 
         if int(request.META.get('CONTENT_LENGTH', -1)) != upload.size:
-            return HttpResponse(
-                "File size (%s) does not match requested size (%s)." % (
-                    request.META['CONTENT_LENGTH'], upload.size),
+            return HttpResponse("File size (%s) does not match requested size (%s)." % (
+                request.META['CONTENT_LENGTH'], upload.size),
                 status=400)
         if upload.type is not None and content_type != upload.type:
             return HttpResponse(
