@@ -214,7 +214,7 @@ python manage.py test xmpp_http_upload
 
 ### 0.5.1 (2017-12-26)
 
-* Support Django 2.0, drop support for Django 1.9.
+* Support Django 2.0, drop support for Django 1.8 and 1.9.
 * Handle requests that do not provide a ContentLength header (a rare corner case).
 
 ### 0.5.0 (2017-03-10)
