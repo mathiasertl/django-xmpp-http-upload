@@ -19,10 +19,14 @@ from __future__ import unicode_literals
 import os
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.six.moves.urllib.parse import quote
 from django.utils.six.moves.urllib.parse import urlsplit
+
+try:
+    from django.urls import reverse
+except ImportError:  # pragma: only django<=1.8
+    from django.core.urlresolvers import reverse
 
 from .querysets import UploadQuerySet
 
