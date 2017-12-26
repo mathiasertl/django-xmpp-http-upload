@@ -76,6 +76,8 @@ class RequestSlotView(View):
         now = timezone.now()
         qs = Upload.objects.filter(jid=jid)
 
+        # TODO: Exclude expired slots (client requested slot but did not upload a file) here.
+
         config = get_config(jid)
 
         # If the config is set to False, everything should be denied.
