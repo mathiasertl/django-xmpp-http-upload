@@ -63,7 +63,12 @@ if args.command == 'test':
     if args.coverage:
         cov.stop()
         cov.save()
-        cov.html_report(directory=report_dir)
+        total_coverage = cov.html_report(directory=report_dir)
+
+        if total_coverage < 100:
+            print('Error: Total coverage is only %.2f%%' % total_coverage)
+            sys.exit(2)
+
 elif args.command == 'code-quality':
     files = ['xmpp_http_upload', 'setup.py', 'test.py']
 
