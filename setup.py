@@ -17,7 +17,7 @@ from setuptools import setup
 version = '0.5.1'
 requires = [
     'Django>=2.2',
-    'djangorestframework>=3.11',
+    'djangorestframework>=3.9',
 ]
 
 setup(
