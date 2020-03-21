@@ -13,6 +13,10 @@ install:
  - pip install -r requirements.txt -r requirements-dev.txt
  - pip install Django==$DJANGO_VERSION
 script:
-  - python setup.py code_quality
-  - python setup.py test
+  - ./test.py code-quality
+  - ./test.py test
   - python setup.py install
+matrix:
+    exclude:
+        - env: DJANGO=3.0.4
+          python: "3.5
