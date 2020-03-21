@@ -98,6 +98,14 @@ class UploadModelTestCase(TestCase):
             self.assertEqual(put_url, put_exp)
             self.assertEqual(get_url, self.upload.file.url)  # if MEDIA_URL is set, file.url is complete URL
 
+        with self.settings(XMPP_HTTP_UPLOAD_URL_BASE='http://example.com/',
+                           MEDIA_URL='http://example.net/',
+                           XMPP_HTTP_UPLOAD_URL_HTTPS=True):
+            put_url, get_url = self.upload.get_urls(request)
+            put_exp = settings.XMPP_HTTP_UPLOAD_URL_BASE + self.upload.get_absolute_url()
+            self.assertEqual(put_url, put_exp.replace('http://', 'https://'))
+            self.assertEqual(get_url, self.upload.file.url.replace('http://', 'https://'))
+
 
 class RequestSlotTestCase(TestCase):
     def assertSlot(self, jid='admin@example.com', filename='example.jpg', size=10,
