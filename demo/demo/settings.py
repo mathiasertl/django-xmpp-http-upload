@@ -109,12 +109,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 XMPP_HTTP_UPLOAD_ACCESS = (
-    ('^admin@example\.com$', {
+    (r'^admin@example\.com$', {
         'http_upload': {},  # empty dict -> no restrictions
     }),
-    ('^blocked@jabber.at$', False),  # this user isn't allowed to upload files
+    (r'^blocked@jabber.at$', False),  # this user isn't allowed to upload files
     # jabber.at and jabber.zone users have some restrictions:
-    (['@example\.net$', '@example\.org$'], {
+    ([r'@example\.net$', r'@example\.org$'], {
         'max_file_size': 512 * 1024,  # 512 KB per file
         'max_total_size': 3 * 1025 * 1024,  # no more then 3 MB total
         'bytes_per_timedelta': {  # 1 MB per hour

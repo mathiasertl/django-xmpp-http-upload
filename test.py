@@ -73,7 +73,7 @@ if args.command == 'test':
             sys.exit(2)
 
 elif args.command == 'code-quality':
-    files = ['xmpp_http_upload', 'setup.py', 'test.py']
+    files = ['xmpp_http_upload', 'setup.py', 'test.py', 'demo']
 
     isort = ['isort', '--check-only', '--diff', '-rc'] + files
     print(' '.join(isort))
