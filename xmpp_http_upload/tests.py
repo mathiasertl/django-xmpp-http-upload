@@ -40,11 +40,6 @@ def put(path, data, content_type='application/octet-stream', **kwargs):
     return c.put(path, data, content_type=content_type)
 
 
-def get(path):
-    c = Client()
-    return c.get(path)
-
-
 class RequestSlotTestCase(TestCase):
     def test_slot(self):
         response = slot(jid='admin@example.com', name='example.jpg', size=10)
