@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+#
 # This file is part of django-xmpp-http-upload (https://github.com/mathiasertl/django-xmpp-http-upload).
 #
 # django-xmpp-http-upload is free software: you can redistribute it and/or modify it under the terms of the
