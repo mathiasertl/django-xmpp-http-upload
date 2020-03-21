@@ -41,34 +41,36 @@ def put(path, data, content_type='application/octet-stream', **kwargs):
 
 
 class RequestSlotTestCase(TestCase):
-    def test_slot(self):
-        response = slot(jid='admin@example.com', name='example.jpg', size=10)
+    def assertSlot(self, jid='admin@example.com', filename='example.jpg', size=10,
+                   expected_filename=None,
+                   **kwargs):
+        expected_filename = expected_filename or filename
+        response = slot(jid=jid, name=filename, size=size, **kwargs)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(Upload.objects.count(), 1)
 
         upload = Upload.objects.first()
-        self.assertEqual(upload.jid, 'admin@example.com')
-        self.assertEqual(upload.name, 'example.jpg')
-        self.assertEqual(upload.size, 10)
+        self.assertEqual(upload.jid, jid)
+        self.assertEqual(upload.name, expected_filename)
+        self.assertEqual(upload.size, size)
         self.assertIsNone(upload.type)
         self.assertIsNotNone(upload.hash)
+        return response, upload
+
+    def assertNoSlot(self, status_code, message, jid='admin@example.com'):
+        response = slot(jid=jid, name='example.jpg', size=10)
+        self.assertEquals(response.status_code, status_code)
+        self.assertEquals(response.content, message)
+        self.assertEquals(Upload.objects.count(), 0)
+
+    def test_slot(self):
+        self.assertSlot()
 
     def test_normalized_filename(self):
-        response = slot(jid='admin@example.com', name='ex/ample.jpg', size=10)
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(Upload.objects.count(), 1)
-
-        upload = Upload.objects.first()
-        self.assertEqual(upload.jid, 'admin@example.com')
-        self.assertEqual(upload.name, 'example.jpg')
-        self.assertEqual(upload.size, 10)
-        self.assertIsNone(upload.type)
-        self.assertIsNotNone(upload.hash)
+        self.assertSlot(filename='ex/ample.jpg', expected_filename='example.jpg')
 
     def test_blocked(self):
-        response = slot(jid='blocked@jabber.at', name='example.jpg', size=10)
-        self.assertEquals(response.status_code, 403)
-        self.assertEquals(Upload.objects.count(), 0)
+        self.assertNoSlot(403, b'You are not allowed to upload files.', jid='blocked@jabber.at')
 
     def test_max_file_size(self):
         response = slot(jid=user_jid, name='example.jpg', size=1024 * 1024)
@@ -154,6 +156,18 @@ class RequestSlotTestCase(TestCase):
         self.assertEqual(upload.size, 10)
         self.assertIsNone(upload.type)
         self.assertIsNotNone(upload.hash)
+
+    def test_no_content_length(self):
+        # TODO: There seems to be no difference in the response at this level. Maybe the webserver adds it?
+
+        with self.settings(XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH=False):
+            response, upload = self.assertSlot()
+
+    def test_add_content_length(self):
+        # TODO: There seems to be no difference in the response at this level. Maybe the webserver adds it?
+
+        with self.settings(XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH=True):
+            response, upload = self.assertSlot()
 
     def test_bad_requests(self):
         # jid missing
@@ -242,6 +256,22 @@ class MaxSizeViewTest(TestCase):
         self.assertEquals(response.status_code, 200)
 
         self.assertEquals(response.json(), {'max_size': 100})
+
+    def test_no_content_length(self):
+        # TODO: There seems to be no difference in the response at this level. Maybe the webserver adds it?
+
+        with self.settings(XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH=False):
+            response = self.req({'jid': 'admin@example.com'})
+            self.assertEquals(response.status_code, 200)
+            self.assertEquals(response.content, b'0')
+
+    def test_add_content_length(self):
+        # TODO: There seems to be no difference in the response at this level. Maybe the webserver adds it?
+
+        with self.settings(XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH=True):
+            response = self.req({'jid': 'admin@example.com'})
+            self.assertEquals(response.status_code, 200)
+            self.assertEquals(response.content, b'0')
 
     def test_unknown_content_type(self):
         response = self.req({'jid': 'user@example.com', 'output': 'application/foobar'})

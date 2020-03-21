@@ -38,7 +38,11 @@ from .utils import get_config
 
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
 _ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
-_add_content_length = getattr(settings, 'XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH', False)
+
+
+def _add_content_length():
+    return getattr(settings, 'XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH', False)
+
 
 # regex of ascii control chars:
 control_chars = ''.join(map(chr, list(range(0, 32)) + list(range(127, 160))))
@@ -137,7 +141,7 @@ class RequestSlotView(View):
         upload.save()
 
         response = HttpResponse(content, content_type=output)
-        if _add_content_length is True:
+        if _add_content_length() is True:
             response['Content-Length'] = len(content)
         return response
 
@@ -165,7 +169,7 @@ class MaxSizeView(View):
             return HttpResponse("Unsupported content type in output.", status=400)
 
         response = HttpResponse(content, content_type=output)
-        if _add_content_length is True:
+        if _add_content_length() is True:
             response['Content-Length'] = len(content)
         return response
 
