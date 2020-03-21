@@ -19,6 +19,7 @@ from datetime import timedelta
 from http import HTTPStatus
 from urllib.parse import urlsplit
 
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.test import Client
 from django.test import RequestFactory
@@ -82,6 +83,20 @@ class UploadModelTestCase(TestCase):
             put_url, get_url = self.upload.get_urls(request)
             self.assertEqual(put_url, request.build_absolute_uri(self.upload.get_absolute_url()))
             self.assertEqual(get_url, request.build_absolute_uri(self.upload.file.url))
+
+        with self.settings(XMPP_HTTP_UPLOAD_URL_BASE='https://example.com'):
+            put_url, get_url = self.upload.get_urls(request)
+            put_exp = settings.XMPP_HTTP_UPLOAD_URL_BASE + self.upload.get_absolute_url()
+            get_exp = settings.XMPP_HTTP_UPLOAD_URL_BASE + self.upload.file.url
+            self.assertEqual(put_url, put_exp)
+            self.assertEqual(get_url, get_exp)
+
+        with self.settings(XMPP_HTTP_UPLOAD_URL_BASE='https://example.com/',
+                           MEDIA_URL='https://example.net/'):
+            put_url, get_url = self.upload.get_urls(request)
+            put_exp = settings.XMPP_HTTP_UPLOAD_URL_BASE + self.upload.get_absolute_url()
+            self.assertEqual(put_url, put_exp)
+            self.assertEqual(get_url, self.upload.file.url)  # if MEDIA_URL is set, file.url is complete URL
 
 
 class RequestSlotTestCase(TestCase):
