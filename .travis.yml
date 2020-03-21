@@ -6,8 +6,12 @@ python:  # https://devguide.python.org/#status-of-python-branches
   - "3.8"
   - "nightly"
 env:  # https://www.djangoproject.com/download/
-  - DJANGO_VERSION=3.0.4
-  - DJANGO_VERSION=2.2.11
+  - DJANGO_VERSION=3.0.4 DRF_VERSION==3.11.0
+  - DJANGO_VERSION=3.0.4 DRF_VERSION==3.10.3
+  - DJANGO_VERSION=3.0.4 DRF_VERSION==3.9.4
+  - DJANGO_VERSION=2.2.11 DRF_VERSION==3.11.0
+  - DJANGO_VERSION=2.2.11 DRF_VERSION==3.10.3
+  - DJANGO_VERSION=2.2.11 DRF_VERSION==3.9.4
 install:
   # Build/test dependencies
  - pip install -r requirements.txt -r requirements-dev.txt
@@ -18,5 +22,9 @@ script:
   - python setup.py install
 matrix:
     exclude:
-        - env: DJANGO=3.0.4
-          python: "3.5
+        - env: DJANGO=3.0.4 DRF_VERSION==3.11.0
+          python: "3.5"
+        - env: DJANGO=3.0.4 DRF_VERSION==3.10.3
+          python: "3.5"
+        - env: DJANGO=3.0.4 DRF_VERSION==3.9.4
+          python: "3.5"
