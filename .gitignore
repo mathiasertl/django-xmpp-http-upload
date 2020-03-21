@@ -12,4 +12,4 @@
 /*.egg-info/
 /py3/
 /build/
-/demo/.coverage
+/.coverage
