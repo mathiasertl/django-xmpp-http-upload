@@ -16,12 +16,12 @@
 from __future__ import unicode_literals
 
 import os
+from urllib.parse import quote
+from urllib.parse import urlsplit
 
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.utils.six.moves.urllib.parse import quote
-from django.utils.six.moves.urllib.parse import urlsplit
 
 from .querysets import UploadQuerySet
 

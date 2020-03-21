@@ -19,7 +19,6 @@ from __future__ import unicode_literals
 import re
 
 from django.conf import settings
-from django.utils import six
 
 
 def get_config(jid):
@@ -31,7 +30,7 @@ def get_config(jid):
     acls = getattr(settings, 'XMPP_HTTP_UPLOAD_ACCESS', (('.*', False), ))
 
     for regex, config in acls:
-        if isinstance(regex, six.string_types):
+        if isinstance(regex, str):
             regex = [regex]
 
         for subex in regex:

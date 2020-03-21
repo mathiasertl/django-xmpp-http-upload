@@ -24,7 +24,6 @@ from django.http import FileResponse
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
 from django.http import UnreadablePostError
-from django.utils import six
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.text import get_valid_filename
@@ -42,7 +41,7 @@ _ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
 _add_content_length = getattr(settings, 'XMPP_HTTP_UPLOAD_ADD_CONTENT_LENGTH', False)
 
 # regex of ascii control chars:
-control_chars = ''.join(map(six.unichr, list(range(0, 32)) + list(range(127, 160))))
+control_chars = ''.join(map(chr, list(range(0, 32)) + list(range(127, 160))))
 control_char_re = re.compile('[%s]' % re.escape(control_chars))
 
 
