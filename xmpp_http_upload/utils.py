@@ -21,6 +21,10 @@ import re
 from django.conf import settings
 
 
+def ws_download():
+    return getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
+
+
 def get_config(jid):
     """Get the configuration for the given JID based on XMPP_HTTP_UPLOAD_ACCESS.
 

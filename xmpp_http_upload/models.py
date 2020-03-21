@@ -24,9 +24,9 @@ from django.db import models
 from django.urls import reverse
 
 from .querysets import UploadQuerySet
+from .utils import ws_download
 
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
-_ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
 _force_https = getattr(settings, 'XMPP_HTTP_UPLOAD_URL_HTTPS', False)
 _upload_url = getattr(settings, 'XMPP_HTTP_UPLOAD_URL_BASE', None)
 
@@ -64,7 +64,7 @@ class Upload(models.Model):
         else:
             put_url = '%s%s' % (_upload_url, location)
 
-        if _ws_download is True:
+        if ws_download() is True:
             get_url = '%s%s/%s/%s' % (settings.MEDIA_URL, _upload_base.strip('/'), self.hash,
                                       quote(self.name.encode('utf-8')))
 

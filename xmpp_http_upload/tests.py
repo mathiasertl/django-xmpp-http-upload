@@ -16,6 +16,7 @@
 from __future__ import unicode_literals
 
 from datetime import timedelta
+from http import HTTPStatus
 from urllib.parse import urlsplit
 
 from django.test import Client
@@ -25,6 +26,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .models import Upload
+from .utils import ws_download
 
 user_jid = 'example@example.net'
 
@@ -33,6 +35,11 @@ def slot(**kwargs):
     url = reverse('xmpp-http-upload:slot')
     c = Client()
     return c.get(url, kwargs)
+
+
+def get(path, **kwargs):
+    c = Client()
+    return c.get(path, **kwargs)
 
 
 def put(path, data, content_type='application/octet-stream', **kwargs):
@@ -286,14 +293,20 @@ class UploadTest(TestCase):
         self.assertEquals(Upload.objects.count(), 1)
         return response.content.decode('utf-8').split()
 
-    def assertUpload(self, filename, content):
+    def assertUpload(self, filename, content, delete=True, content_type=None):
         # First request a slot
         self.assertEquals(Upload.objects.count(), 0)
-        put_url, get_url = self.request_slot(filename, size=len(content))
+        slot_kwargs = {}
+        if content_type:
+            slot_kwargs['type'] = content_type
+        put_url, get_url = self.request_slot(filename, size=len(content), **slot_kwargs)
 
         # Upload the file
         put_path = urlsplit(put_url).path
-        response = put(put_path, content)
+        put_kwargs = {}
+        if content_type:
+            put_kwargs['content_type'] = content_type
+        response = put(put_path, content, **put_kwargs)
         self.assertEquals(response.status_code, 201)
 
         # Get the object, verify that the same URLs are generated
@@ -304,11 +317,13 @@ class UploadTest(TestCase):
             # open the file, verify contents
             self.assertEqual(bytes(content, 'utf-8'), upload.file.read())
 
-            # try to download it
-            self.assertEqual(upload.file.url, urlsplit(get_url).path)
+            # Test the file url, but ownly if webserver download is configured
+            if ws_download() is True:
+                self.assertEqual(upload.file.url, urlsplit(get_url).path)
         finally:
-            # remove file
-            upload.file.delete(save=True)
+            if delete is True:  # remove file
+                upload.file.delete(save=True)
+        return upload, put_url, get_url
 
     def test_basic(self):
         self.assertUpload('example.txt', 'this is a test')
@@ -321,6 +336,54 @@ class UploadTest(TestCase):
 
     def test_unicode(self):
         self.assertUpload('صباح الخير يا صاحب.txt', 'testcontent')
+
+    def test_direct_download(self):
+        # test that we can download a file
+        filename = 'example.txt'
+        content = 'this is a test'
+
+        try:
+            with self.settings(XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD=False):
+                upload, put_url, get_url = self.assertUpload(filename, content, delete=False)
+                response = get(urlsplit(get_url).path)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(b''.join(response.streaming_content), bytes(content, 'utf-8'))
+                self.assertEqual(response['Content-Type'], 'application/octet-stream')
+                self.assertEqual(response['Content-Length'], str(len(content)))
+                self.assertEqual(response.filename, filename)
+        finally:
+            upload.file.delete(save=True)
+
+    def test_direct_download_content_type(self):
+        # test that we can download a file
+        filename = 'example.txt'
+        content = 'this is a test'
+        ct = 'text/plain'
+
+        try:
+            with self.settings(XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD=False):
+                upload, put_url, get_url = self.assertUpload(filename, content, delete=False,
+                                                             content_type=ct)
+                response = get(urlsplit(get_url).path)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(b''.join(response.streaming_content), bytes(content, 'utf-8'))
+                self.assertEqual(response['Content-Type'], ct)
+                self.assertEqual(response['Content-Length'], str(len(content)))
+                self.assertEqual(response.filename, filename)
+        finally:
+            upload.file.delete(save=True)
+
+    def test_webserver_download(self):
+        filename = 'example.txt'
+        content = 'foo'
+
+        with self.settings(XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD=True):
+            upload, put_url, get_url = self.assertUpload(filename, content, delete=False)
+            self.assertEqual(urlsplit(get_url).path, upload.file.url)
+
+            # NOTE: put_url is the same as the direct download path
+            response = get(urlsplit(put_url).path)
+            self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_non_existing(self):
         filename = 'example.jpg'

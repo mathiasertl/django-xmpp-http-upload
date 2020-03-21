@@ -35,9 +35,9 @@ from rest_framework.views import APIView
 
 from .models import Upload
 from .utils import get_config
+from .utils import ws_download
 
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
-_ws_download = getattr(settings, 'XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD', True)
 
 
 def _add_content_length():
@@ -179,11 +179,13 @@ class UploadView(APIView):
 
     def get(self, request, hash, filename):
         """Download a file."""
-        if _ws_download is True:
+        if ws_download() is True:
             return HttpResponseForbidden()
         upload = Upload.objects.uploaded().get(hash=hash, name=filename)
 
-        return FileResponse(upload.file, content_type=upload.type)
+        resp = FileResponse(upload.file, content_type=upload.type, filename=filename)
+        resp['Content-Length'] = upload.file.size
+        return resp
 
     def put(self, request, hash, filename):
         try:
