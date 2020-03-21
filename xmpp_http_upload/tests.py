@@ -13,8 +13,7 @@
 # You should have received a copy of the GNU General Public License along with django-xmpp-http-upload. If
 # not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
-
+import os
 from datetime import timedelta
 from http import HTTPStatus
 from urllib.parse import urlsplit
@@ -24,6 +23,7 @@ from freezegun import freeze_time
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
+from django.core.management import call_command
 from django.test import Client
 from django.test import RequestFactory
 from django.test import TestCase
@@ -33,6 +33,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 
 from .models import Upload
+from .tasks import cleanup_http_uploads
 from .utils import ws_download
 
 user_jid = 'example@example.net'
@@ -536,3 +537,100 @@ class UploadTest(TestCase):
         self.assertEqual(upload.file.name, '')
         self.assertEqual(response.content,
                          b'Content type (application/octet-stream) does not match requested type.')
+
+
+class CleanupMixin:
+    def setUp(self):
+        self.content = 'example content'
+        self.jid = 'user@example.com'
+        self.name1 = 'example.txt'
+        self.name2 = 'example.jpg'
+        self.size = len(self.content)
+        self.type = 'text/plain'
+        self.hash = get_random_string(32)
+
+        self.u1 = Upload.objects.create(
+            jid=self.jid, name=self.name1, size=self.size, type=self.type, hash=self.hash
+        )
+        self.u2 = Upload.objects.create(
+            jid=self.jid, name=self.name2, size=self.size, type=self.type, hash=self.hash
+        )
+
+    @property
+    def slots_expired(self):
+        return timezone.now() + timedelta(seconds=361)
+
+    @property
+    def files_expired(self):
+        return timezone.now() + timedelta(seconds=86400 * 32)
+
+    def test_basic(self):
+        # first, nothing happens...
+        self.cleanup()
+        u1 = Upload.objects.get(pk=self.u1.pk)
+        u2 = Upload.objects.get(pk=self.u2.pk)
+        self.assertFalse(u1.file)
+        self.assertFalse(u2.file)
+
+        # save a file, and still nothing happens
+        self.u1.file.save(self.name1, ContentFile(self.content))
+        self.cleanup()
+        u1 = Upload.objects.get(pk=self.u1.pk)
+        u2 = Upload.objects.get(pk=self.u2.pk)
+        self.assertTrue(os.path.exists(u1.file.path))
+        self.assertFalse(u2.file)
+
+    def test_expired_slots(self):
+        self.u1.file.save(self.name1, ContentFile(self.content))
+
+        # cleanup slots that have no file uploaded
+        with freeze_time(self.slots_expired):
+            # cleanup with no empty slot removal - nothing should be removed
+            self.cleanup(slots=False)
+            self.assertTrue(Upload.objects.filter(pk=self.u1.pk).exists())
+            self.assertTrue(Upload.objects.filter(pk=self.u2.pk).exists())
+
+            self.cleanup()
+            self.assertTrue(Upload.objects.filter(pk=self.u1.pk).exists())
+            self.assertFalse(Upload.objects.filter(pk=self.u2.pk).exists())
+
+    def test_files_expired(self):
+        self.u1.file.save(self.name1, ContentFile(self.content))
+        self.u2.file.save(self.name2, ContentFile(self.content))
+
+        with freeze_time(self.files_expired):
+            self.cleanup(files=False)
+            self.assertTrue(Upload.objects.filter(pk=self.u1.pk).exists())
+            self.assertTrue(Upload.objects.filter(pk=self.u2.pk).exists())
+            self.assertTrue(os.path.exists(self.u1.file.path))
+            self.assertTrue(os.path.exists(self.u2.file.path))
+
+            self.cleanup(timeout=86400 * 64)
+            self.assertTrue(Upload.objects.filter(pk=self.u1.pk).exists())
+            self.assertTrue(Upload.objects.filter(pk=self.u2.pk).exists())
+            self.assertTrue(os.path.exists(self.u1.file.path))
+            self.assertTrue(os.path.exists(self.u2.file.path))
+
+            self.cleanup()
+            self.assertFalse(Upload.objects.filter(pk=self.u1.pk).exists())
+            self.assertFalse(Upload.objects.filter(pk=self.u2.pk).exists())
+            self.assertFalse(os.path.exists(self.u1.file.path))
+            self.assertFalse(os.path.exists(self.u2.file.path))
+
+
+class CeleryCleanupTaskTestCase(CleanupMixin, TestCase):
+    def cleanup(self, **kwargs):
+        cleanup_http_uploads(**kwargs)
+
+
+class ManageCleanupCommandTestCase(CleanupMixin, TestCase):
+    def cleanup(self, slots=True, files=True, timeout=None):
+        kwargs = {}
+        if not slots:
+            kwargs['no_slots'] = False
+        if not files:
+            kwargs['no_files'] = False
+        if timeout:
+            kwargs['timeout'] = int(timeout / 86400)
+
+        call_command('cleanup_http_uploads', **kwargs)
