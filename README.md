@@ -216,6 +216,7 @@ python manage.py test xmpp_http_upload
 * Add support for djangorestframework 3.9, 3.10 and 3.11.
 * Drop support for Django 2.0 and Django 2.1.
 * Drop support for Python 2.7 and Python 3.4.
+* Drop support for djangorestframework 3.7.
 * Return `Content-Type` and `Content-Length` headers with direct download.
 * Ensure test coverage of 100%.
 
