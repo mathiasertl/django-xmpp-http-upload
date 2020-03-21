@@ -113,7 +113,7 @@ class UploadModelTestCase(TestCase):
 
 class AdminChangelistViewTestCase(TestCase):
     def setUp(self):
-        self.user = User.objects.create_superuser(username='u', password='p')
+        self.user = User.objects.create_superuser(username='u', password='p', email='user@example.com')
         self.changelist_url = reverse('admin:xmpp_http_upload_upload_changelist')
         self.client = Client()
         self.client.force_login(self.user)
