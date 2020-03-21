@@ -28,7 +28,10 @@ from .utils import ws_download
 
 _upload_base = getattr(settings, 'XMPP_HTTP_UPLOAD_ROOT', 'http_upload')
 _force_https = getattr(settings, 'XMPP_HTTP_UPLOAD_URL_HTTPS', False)
-_upload_url = getattr(settings, 'XMPP_HTTP_UPLOAD_URL_BASE', None)
+
+
+def get_upload_url():
+    return getattr(settings, 'XMPP_HTTP_UPLOAD_URL_BASE', None)
 
 
 def get_upload_path(instance, filename):
@@ -59,20 +62,21 @@ class Upload(models.Model):
 
     def get_urls(self, request):
         location = self.get_absolute_url()
-        if _upload_url is None:
+        upload_url = get_upload_url()
+        if upload_url is None:
             put_url = request.build_absolute_uri(location)
         else:
-            put_url = '%s%s' % (_upload_url, location)
+            put_url = '%s%s' % (upload_url, location)
 
         if ws_download() is True:
             get_url = '%s%s/%s/%s' % (settings.MEDIA_URL, _upload_base.strip('/'), self.hash,
                                       quote(self.name.encode('utf-8')))
 
             if not urlsplit(get_url).netloc:
-                if _upload_url is None:
+                if upload_url is None:
                     get_url = request.build_absolute_uri(get_url)
                 else:
-                    get_url = '%s%s' % (_upload_url, get_url)
+                    get_url = '%s%s' % (upload_url, get_url)
 
         else:
             get_url = put_url
