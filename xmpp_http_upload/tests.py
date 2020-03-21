@@ -19,7 +19,10 @@ from datetime import timedelta
 from http import HTTPStatus
 from urllib.parse import urlsplit
 
+from freezegun import freeze_time
+
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.test import Client
 from django.test import RequestFactory
@@ -105,6 +108,64 @@ class UploadModelTestCase(TestCase):
             put_exp = settings.XMPP_HTTP_UPLOAD_URL_BASE + self.upload.get_absolute_url()
             self.assertEqual(put_url, put_exp.replace('http://', 'https://'))
             self.assertEqual(get_url, self.upload.file.url.replace('http://', 'https://'))
+
+
+class AdminChangelistViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_superuser(username='u', password='p')
+        self.changelist_url = reverse('admin:xmpp_http_upload_upload_changelist')
+        self.client = Client()
+        self.client.force_login(self.user)
+
+        self.content = 'example content'
+        self.jid = 'user@example.com'
+        self.name1 = 'example.txt'
+        self.name2 = 'example.jpg'
+        self.size = len(self.content)
+        self.type = 'text/plain'
+        self.hash = get_random_string(32)
+
+        self.u1 = Upload.objects.create(
+            jid=self.jid, name=self.name1, size=self.size, type=self.type, hash=self.hash
+        )
+        self.u2 = Upload.objects.create(
+            jid=self.jid, name=self.name2, size=self.size, type=self.type, hash=self.hash
+        )
+
+    def assertResponse(self, response, *uploads):
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(set(response.context['cl'].result_list), set(uploads))
+
+    def test_get(self):
+        response = self.client.get(self.changelist_url)
+        self.assertResponse(response, self.u1, self.u2)
+
+    def test_not_uploaded(self):
+        response = self.client.get(self.changelist_url, {'uploaded': '0'})
+        self.assertResponse(response, self.u1, self.u2)
+
+        # upload u1 and test we only get u2
+        self.u1.file.save(self.name1, ContentFile(self.content))
+        response = self.client.get(self.changelist_url, {'uploaded': '0'})
+        self.assertResponse(response, self.u2)
+
+    def test_uploaded(self):
+        response = self.client.get(self.changelist_url, {'uploaded': '1'})
+        self.assertResponse(response)
+
+        # upload u1 and test we get u1
+        self.u1.file.save(self.name1, ContentFile(self.content))
+        response = self.client.get(self.changelist_url, {'uploaded': '1'})
+        self.assertResponse(response, self.u1)
+
+    def test_expired(self):
+        with freeze_time(timezone.now()) as frozen:
+            response = self.client.get(self.changelist_url, {'uploaded': '2'})
+            self.assertResponse(response)
+
+            frozen.tick(delta=timedelta(seconds=361))  # XMPP_HTTP_UPLOAD_PUT_TIMEOUT + 1
+            response = self.client.get(self.changelist_url, {'uploaded': '2'})
+            self.assertResponse(response, self.u1, self.u2)  # they're all expired
 
 
 class RequestSlotTestCase(TestCase):
