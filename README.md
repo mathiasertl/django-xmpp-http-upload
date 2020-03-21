@@ -118,7 +118,8 @@ e.g. a file called `localsettings.py`).
   something that is sensible for your environment.
 * `XMPP_HTTP_UPLOAD_URL_BASE`:
   The domain used to create upload/download URLs when a new slot is requested by the XMPP server.
-  By default, the domain used to access the slot API is used.
+  By default, the domain used to access the slot API is used. This is useful if the XMPP server accesses the
+  webserver under a different URL then the user.
 * `XMPP_HTTP_UPLOAD_URL_HTTPS`:
   Ensure returned GET and PUT urls to be https. May be needed if protocol is
   not correctly recognized automatically.
