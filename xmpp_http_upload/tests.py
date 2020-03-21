@@ -170,7 +170,7 @@ class RequestSlotTestCase(TestCase):
         self.assertEquals(Upload.objects.count(), 0)
 
     @override_settings(XMPP_HTTP_UPLOAD_ACCESS=[
-        ('^admin@example\.com$', {}),
+        (r'^admin@example\.com$', {}),
     ])
     def test_no_matching_acl(self):
         # This works:
@@ -185,8 +185,8 @@ class RequestSlotTestCase(TestCase):
 
 
 @override_settings(XMPP_HTTP_UPLOAD_ACCESS=[
-    ('^admin@example\.com$', {}),
-    ('^user@example\.com$', {'max_file_size': 100, }),
+    (r'^admin@example\.com$', {}),
+    (r'^user@example\.com$', {'max_file_size': 100, }),
 ])
 class MaxSizeViewTest(TestCase):
     def req(self, *args, **kwargs):
