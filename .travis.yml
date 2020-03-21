@@ -4,7 +4,8 @@ python:  # https://devguide.python.org/#status-of-python-branches
   - "3.6"
   - "3.7"
   - "3.8"
-  - "nightly"
+  #flake8 currently fails with nightly
+  #- "nightly"
 env:  # https://www.djangoproject.com/download/
   - DJANGO=3.0.4 DRF==3.11.0
   - DJANGO=3.0.4 DRF==3.10.3
