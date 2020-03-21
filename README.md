@@ -207,19 +207,17 @@ cd demo
 python manage.py test xmpp_http_upload
 ```
 
-## TODO
-
-* Write cleanup celery task
-
 ## ChangeLog
 
 ### 1.0.0 (2020-03-21)
 
 * Add support Django 2.2 and Django 3.0.
 * Add support Python 3.7 and Python 3.8.
+* Add support for djangorestframework 3.9, 3.10 and 3.11.
 * Drop support for Django 2.0 and Django 2.1.
 * Drop support for Python 2.7 and Python 3.4.
 * Return `Content-Type` and `Content-Length` headers with direct download.
+* Ensure test coverage of 100%.
 
 ### 0.5.1 (2017-12-26)
 
