@@ -19,11 +19,14 @@ from datetime import timedelta
 from http import HTTPStatus
 from urllib.parse import urlsplit
 
+from django.core.files.base import ContentFile
 from django.test import Client
+from django.test import RequestFactory
 from django.test import TestCase
 from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 
 from .models import Upload
 from .utils import ws_download
@@ -45,6 +48,40 @@ def get(path, **kwargs):
 def put(path, data, content_type='application/octet-stream', **kwargs):
     c = Client()
     return c.put(path, data, content_type=content_type)
+
+
+class UploadModelTestCase(TestCase):
+    def setUp(self):
+        self.content = 'example content'
+        self.jid = 'user@example.com'
+        self.name = 'example.txt'
+        self.size = len(self.content)
+        self.type = 'text/plain'
+        self.hash = get_random_string(32)
+
+        self.upload = Upload.objects.create(
+            jid=self.jid, name=self.name, size=self.size, type=self.type, hash=self.hash
+        )
+
+    def test_get_absolute_url(self):
+        self.assertEqual(self.upload.get_absolute_url(),
+                         '/http_upload/share/%s/%s' % (self.hash, self.name))
+
+    def test_get_urls(self):
+        factory = RequestFactory()
+        request = factory.get(self.upload.get_absolute_url())
+
+        with self.settings(XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD=False):
+            put_url, get_url = self.upload.get_urls(request)
+            self.assertEqual(put_url, request.build_absolute_uri(self.upload.get_absolute_url()))
+            self.assertEqual(get_url, request.build_absolute_uri(self.upload.get_absolute_url()))
+
+        with self.settings(XMPP_HTTP_UPLOAD_WEBSERVER_DOWNLOAD=True):
+            self.upload.file.save(self.name, ContentFile(self.content))
+
+            put_url, get_url = self.upload.get_urls(request)
+            self.assertEqual(put_url, request.build_absolute_uri(self.upload.get_absolute_url()))
+            self.assertEqual(get_url, request.build_absolute_uri(self.upload.file.url))
 
 
 class RequestSlotTestCase(TestCase):
