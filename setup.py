@@ -14,7 +14,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-version = '0.5.1'
+version = '1.0.0'
 requires = [
     'Django>=2.2',
     'djangorestframework>=3.9',
