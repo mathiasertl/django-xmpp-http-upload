@@ -124,7 +124,6 @@ class RequestSlotView(View):
             return HttpResponse(message, status=413)
 
         put_url, get_url = upload.get_urls(request)
-        upload.save()
 
         output = request.GET.get('output', 'text/plain')
         if output == 'text/plain':
@@ -133,6 +132,9 @@ class RequestSlotView(View):
             content = json.dumps({'get': get_url, 'put': put_url})
         else:
             return HttpResponse("Unsupported content type in output.", status=400)
+
+        # Finally sure we will have a response, so save upload to database.
+        upload.save()
 
         response = HttpResponse(content, content_type=output)
         if _add_content_length is True:

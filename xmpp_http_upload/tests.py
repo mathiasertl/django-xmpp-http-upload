@@ -137,6 +137,24 @@ class RequestSlotTestCase(TestCase):
         self.assertEqual(upload.type, 'foo/bar')
         self.assertIsNotNone(upload.hash)
 
+    def test_json(self):
+        response = slot(jid='admin@example.com', name='example.jpg', size=10, output='application/json')
+        upload = Upload.objects.first()
+        put_url, get_url = upload.get_urls(response.wsgi_request)
+
+        self.assertEquals(response.json(), {
+            'get': get_url,
+            'put': put_url,
+        })
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(Upload.objects.count(), 1)
+
+        self.assertEqual(upload.jid, 'admin@example.com')
+        self.assertEqual(upload.name, 'example.jpg')
+        self.assertEqual(upload.size, 10)
+        self.assertIsNone(upload.type)
+        self.assertIsNotNone(upload.hash)
+
     def test_bad_requests(self):
         # jid missing
         response = slot(name='example.jpg', size=10)
@@ -160,6 +178,17 @@ class RequestSlotTestCase(TestCase):
 
         # negative size
         response = slot(jid='admin@example.com', name='example.jpg', size=-3)
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(Upload.objects.count(), 0)
+
+        # filename to long
+        response = slot(jid='admin@example.com', name='a' * 255, size=10)
+        self.assertEquals(response.status_code, 413)
+        self.assertEquals(Upload.objects.count(), 0)
+
+        # invalid content type
+        response = slot(jid='admin@example.com', name='example.jpg', size=10, output='foo/bar')
+        self.assertEquals(response.content, b"Unsupported content type in output.")
         self.assertEquals(response.status_code, 400)
         self.assertEquals(Upload.objects.count(), 0)
 
