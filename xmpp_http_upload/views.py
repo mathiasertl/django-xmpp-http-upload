@@ -205,8 +205,9 @@ class UploadView(APIView):
 
         try:
             file_obj = request.FILES['file']
-        except UnreadablePostError:
+        except UnreadablePostError:  # pragma: no cover
             # This seems to happen if the client never actually posts any data.
+            # Django docs: "UnreadablePostError is raised when a user cancels an upload."
             return HttpResponse('Could not read post request.', status=400)
 
         upload.file = file_obj
