@@ -5,4 +5,5 @@
 **/pip-selfcheck.json
 /.git/
 /.coverage
+/.tox/
 /demo/media/

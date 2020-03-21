@@ -3,6 +3,7 @@
 *.sw[po]
 /*.egg-info/
 /.coverage
+/.tox/
 /build/
 /demo/media/
 /dist/
