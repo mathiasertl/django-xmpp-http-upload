@@ -17,6 +17,7 @@ import argparse
 import os
 import subprocess
 import sys
+import tempfile
 
 import coverage
 
@@ -44,8 +45,10 @@ def run_tests(test_labels):
     sys.path.insert(0, work_dir)
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "demo.test_settings")
 
-    django.setup()
-    call_command('test', *test_labels)
+    with tempfile.TemporaryDirectory() as tempdir:
+        os.environ.setdefault('MEDIA_ROOT', tempdir)
+        django.setup()
+        call_command('test', *test_labels)
 
 
 if args.command == 'test':
