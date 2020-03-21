@@ -28,3 +28,12 @@ matrix:
           python: "3.5"
         - env: DJANGO=3.0.4 DRF==3.9.4
           python: "3.5"
+        # exclude all Django-3.0/DRF-3.9 combos, DRF-3.9 includes django.utils.six
+        - env: DJANGO=3.0.4 DRF==3.9.4
+          python: "3.6"
+        - env: DJANGO=3.0.4 DRF==3.9.4
+          python: "3.7"
+        - env: DJANGO=3.0.4 DRF==3.9.4
+          python: "3.8"
+        - env: DJANGO=3.0.4 DRF==3.9.4
+          python: "3.9"
