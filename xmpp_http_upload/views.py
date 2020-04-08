@@ -33,6 +33,8 @@ from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from urllib.parse import unquote
+
 from .models import Upload
 from .utils import get_config
 from .utils import ws_download
@@ -181,15 +183,16 @@ class UploadView(APIView):
         """Download a file."""
         if ws_download() is True:
             return HttpResponseForbidden()
-        upload = Upload.objects.uploaded().get(hash=hash, name=filename)
+        upload = Upload.objects.uploaded().get(hash=hash, name=get_valid_filename(filename))
 
-        resp = FileResponse(upload.file, content_type=upload.type, filename=filename)
+        resp = FileResponse(upload.file, content_type=upload.type, filename=get_valid_filename(filename))
         resp['Content-Length'] = upload.file.size
         return resp
 
     def put(self, request, hash, filename):
         try:
-            upload = Upload.objects.for_upload().get(hash=hash, name=filename)
+            # some clients doublequote
+            upload = Upload.objects.for_upload().get(hash=hash, name=get_valid_filename(unquote(filename)))
         except Upload.DoesNotExist:
             return HttpResponseForbidden()
         content_type = request.META.get('CONTENT_TYPE', 'application/octet-stream')
